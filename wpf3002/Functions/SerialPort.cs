@@ -7,7 +7,7 @@ using System.IO.Ports;
 
 namespace wpf3002
 {
-    class PortDataReceived
+    public class PortDataReceived
     {
         public static void Main()
         {
