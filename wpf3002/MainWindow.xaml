@@ -3,6 +3,25 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="768" Width="1366">
     <Grid>
-        
+        <TextBox Name="textBoxUI" HorizontalAlignment="Left" Height="681" Margin="760,24,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="544"/>
+        <ListView Name="ListViewPriceList" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="681" Margin="41,24,0,0" VerticalAlignment="Top" Width="640">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Height="auto">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding name}"/>
+                        <TextBlock Grid.Column="1" Text="{Binding barcode}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Window>

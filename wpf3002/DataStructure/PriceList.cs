@@ -12,28 +12,36 @@ using Newtonsoft.Json;
 namespace wpf3002.DataStructure
 {
 
-    public class PriceList : INotifyPropertyChanged
+    class PriceList : INotifyPropertyChanged
     {
         public PriceList(String jsonString)
         {
-            _allItem = (ObservableCollection<Item>)JsonConvert.DeserializeObject<ObservableCollection<Item>>(jsonString);
+            allItems = new ObservableCollection<Item>();
+            allItems.CollectionChanged += _allItems_CollectionChanged;
+            _allItems = (ObservableCollection<Item>)JsonConvert.DeserializeObject<ObservableCollection<Item>>(jsonString);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private ObservableCollection<Item> _allItem;
+        private ObservableCollection<Item> _allItems;
 
-        public ObservableCollection<Item> allItem
+        public ObservableCollection<Item> allItems
         {
-            get { return this._allItem; }
+            get { return this._allItems; }
             set
             {
-                if (value != this._allItem)
+                if (value != this._allItems)
                 {
-                    this._allItem = value;
+                    this._allItems = value;
                     OnPropertyChanged("allItem");
                 }
             }
+        }
+
+        void _allItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            string test = null;
+            //throw new NotImplementedException();
         }
 
         protected void OnPropertyChanged(string name)

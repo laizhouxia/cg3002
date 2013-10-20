@@ -9,7 +9,7 @@ namespace wpf3002
 {
     public class PortDataReceived
     {
-        public static void Main()
+        public static void Mainsss()
         {
             SerialPort mySerialPort = new SerialPort("COM1");
 
