@@ -74,8 +74,9 @@
         <TextBox Name="category" HorizontalAlignment="Left" Height="30" Margin="151,434,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
         <TextBlock HorizontalAlignment="Left" Margin="38,504,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top" Height="30" Width="86"/>
         <TextBox Name="manufacturer" HorizontalAlignment="Left" Height="30" Margin="151,500,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <Button Content="Modify" HorizontalAlignment="Left" Margin="128,573,0,0" VerticalAlignment="Top" Width="96" Height="34"/>
-        <Button Content="Add" HorizontalAlignment="Left" Margin="50,639,0,0" VerticalAlignment="Top" Width="96" Height="34"/>
-        <Button Content="Delete" HorizontalAlignment="Left" Margin="212,639,0,0" VerticalAlignment="Top" Width="96" Height="34"/>
+        
+        <Button Content="Modify" HorizontalAlignment="Left" Margin="128,573,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="modify_Click"/>
+        <Button Content="Add" HorizontalAlignment="Left" Margin="50,639,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="add_Click"/>
+        <Button Content="Delete" HorizontalAlignment="Left" Margin="212,639,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="delete_Click"/>
     </Grid>
 </Window>
