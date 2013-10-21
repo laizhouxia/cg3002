@@ -20,7 +20,7 @@ using Newtonsoft.Json;
 using System.Runtime.Serialization.Json;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Net.Http;
+using System.Threading;
 
 
 
@@ -34,25 +34,61 @@ namespace wpf3002
     {
         public MainWindow()
         {
+            this.DataContext = this;
             InitializeComponent();
-            initial();
+            //initial();
+            //ListViewPriceList.ItemsSource = priceList.allItems;
         }
-
-        private DataStructure.PriceList priceList;
 
         private async Task initial()
         {
             String response = await Functions.RequestSender.GetPriceListAsync();
             if (response != null)
             {
-                priceList = new DataStructure.PriceList(response);
-                for (int i = 0; i < 1000;i++ )
-                    textBoxUI.Text += (priceList.allItems)[i].barcode + "\r\n";
+                _allItems = (ObservableCollection<DataStructure.Item>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Item>>(response);
+                for (int i = 0; i < 50;i++ )
+                    textBoxUI.Text += (_allItems)[i].barcode + "\r\n";
+                textBoxUI.Text += "finish";
             }
             else
             {
+                textBoxUI.Text += "response is empty";
             }
         }
 
+
+        ObservableCollection<DataStructure.Item> _allItems = new ObservableCollection<DataStructure.Item>();
+
+        public ObservableCollection<DataStructure.Item> allItems
+        {
+            get
+            {
+                return this._allItems;
+            }
+            //set
+            //{
+            //    if (value != this._allItems)
+            //    {
+            //        this._allItems = value;
+            //    }
+            //}
+        }
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await initial();
+            ThreadPool.QueueUserWorkItem((x) =>
+            {
+                while (true)
+                {
+                    Dispatcher.BeginInvoke((Action)(() =>
+                    {
+                       // mFileNames.Add(new FileInfo("X"));
+                        
+                        _allItems.Add(new DataStructure.Item("1", "1", "1", "1", "1", "1", "1", "1"));
+                    }));
+                    Thread.Sleep(500);
+                }
+            });
+        }
     }
 }

@@ -12,10 +12,8 @@ using Newtonsoft.Json;
 namespace wpf3002.DataStructure
 {
     [DataContract]
-    class Item
+    public class Item
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         [DataMember(Name = "name")]
         public String name { get; set; }
 
