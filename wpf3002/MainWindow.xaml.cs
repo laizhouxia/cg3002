@@ -45,14 +45,17 @@ namespace wpf3002
             String response = await Functions.RequestSender.GetPriceListAsync();
             if (response != null)
             {
-                _allItems = (ObservableCollection<DataStructure.Item>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Item>>(response);
-                for (int i = 0; i < 50;i++ )
-                    textBoxUI.Text += (_allItems)[i].barcode + "\r\n";
-                textBoxUI.Text += "finish";
+                ObservableCollection<DataStructure.Item> temp = (ObservableCollection<DataStructure.Item>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Item>>(response);
+                for (int i = 0; i < 500; i++)
+                {
+                    //textBoxUI.Text += temp[i].barcode + "\r\n";
+                    _allItems.Add(temp[i]);
+                }
+                //textBoxUI.Text += "finish";
             }
             else
             {
-                textBoxUI.Text += "response is empty";
+                //textBoxUI.Text += "response is empty";
             }
         }
 
@@ -78,16 +81,16 @@ namespace wpf3002
             await initial();
             ThreadPool.QueueUserWorkItem((x) =>
             {
-                while (true)
-                {
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                       // mFileNames.Add(new FileInfo("X"));
-                        
-                        _allItems.Add(new DataStructure.Item("1", "1", "1", "1", "1", "1", "1", "1"));
-                    }));
-                    Thread.Sleep(500);
-                }
+                //while (true)
+                //{
+                //    Dispatcher.BeginInvoke((Action)(() =>
+                //    {
+                //        // mFileNames.Add(new FileInfo("X"));
+
+                //        _allItems.Add(new DataStructure.Item("1", "1", "1", "1", "1", "1", "1", "1"));
+                //    }));
+                //    Thread.Sleep(500);
+                //}
             });
         }
     }
