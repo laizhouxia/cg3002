@@ -187,8 +187,7 @@ namespace wpf3002
             if (item != null)
             {
                 DataStructure.Item selectedItem = (DataStructure.Item)item.Content;
-                
-
+                setAllTextBox(selectedItem);
                 enableAllTextBox();
             }
         }
