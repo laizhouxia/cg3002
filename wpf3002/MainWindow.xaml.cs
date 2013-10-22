@@ -21,7 +21,7 @@ using System.Runtime.Serialization.Json;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Threading;
-
+using System.IO.Ports;
 
 
 namespace wpf3002
@@ -167,6 +167,7 @@ namespace wpf3002
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await initial();
+            initialSerialPort();
             //ThreadPool.QueueUserWorkItem((x) =>
             //{
             //    while (true)
@@ -201,6 +202,8 @@ namespace wpf3002
                 enableAllTextBox();
             }
         }
+
+
 
         private void setAllTextBox(DataStructure.Item item)
         {
@@ -245,7 +248,7 @@ namespace wpf3002
         private Boolean testBarcode(string bar)
         {
             for (int i = 0; i < data.Count; i++)
-                if (bar == data[0].barcode)
+                if (bar == data[i].barcode)
                     return true;
             return false;
         }
@@ -310,6 +313,89 @@ namespace wpf3002
                     _allItems.Remove(itm);
                     break;
                 }
+            }
+        }
+
+        static bool _continue;
+        static SerialPort _serialPort;
+        DataStructure.Transaction transaction = new DataStructure.Transaction();
+        List<DataStructure.Transaction> wholeDayTransaction = new List<DataStructure.Transaction>();
+        String oneItemBarcode = null;
+        String oneItemPrice = null;
+
+        public void initialSerialPort()
+        {
+            StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;
+            Thread readThread = new Thread(Read);
+
+            // Create a new SerialPort object with default settings.
+            _serialPort = new SerialPort("COM4");
+
+            // Allow the user to set the appropriate properties.
+            _serialPort.BaudRate = 9600;
+            _serialPort.Parity = Parity.None;
+            _serialPort.StopBits = StopBits.One;
+            _serialPort.DataBits = 8;
+            _serialPort.Handshake = Handshake.None;
+
+            // Set the read/write timeouts
+            _serialPort.ReadTimeout = 500;
+            _serialPort.WriteTimeout = 500;
+
+            _serialPort.Open();
+            _continue = true;
+            readThread.Start();
+
+            while (_continue)
+            {
+                if (oneItemPrice == null && oneItemBarcode != null)
+                {
+                    
+                    for (int i = 0; i < data.Count; i++)
+                        if (oneItemBarcode == data[i].barcode)
+                        {
+                            oneItemPrice = data[i].daily_price;
+                            _serialPort.WriteLine("O1"+oneItemPrice);
+                        }
+                }
+            }
+
+            readThread.Join();
+            _serialPort.Close();
+        }
+
+        public void Read()
+        {
+            while (_continue)
+            {
+                try
+                {
+                    string message = _serialPort.ReadLine();
+                    if (message != null && message.Length > 7)
+                    {
+                        if (message[0] == 'B' && message[1] == 'C')
+                        {
+                            string receivedBarcode = message.Substring(2, 6);
+                            for (int i = 0; i < data.Count; i++)
+                                if (receivedBarcode == data[i].barcode)
+                                    oneItemBarcode = receivedBarcode;
+                        }
+                        if (message[0] == 'Q' && message[1] == 'T')
+                        {
+                            string receivedQuantity = message.Substring(2, 6);
+                            if (oneItemBarcode != null)
+                                transaction.add(oneItemBarcode, receivedQuantity);
+                            oneItemBarcode = null;
+                            oneItemPrice = null;
+                        }
+                        if (message[0] == 'T' && message[1] == 'H')
+                        {
+                            wholeDayTransaction.Add(transaction);
+                            transaction = new DataStructure.Transaction();
+                        }
+                    }
+                }
+                catch (TimeoutException) { }
             }
         }
     }

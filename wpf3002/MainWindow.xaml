@@ -58,25 +58,26 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBlock HorizontalAlignment="Left" TextAlignment="Left" Margin="38,84,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="name" HorizontalAlignment="Left" Height="30" Margin="151,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="38,141,0,0" TextWrapping="Wrap" Text="Barcode" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="barcode" HorizontalAlignment="Left" Height="30" Margin="151,136,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="38,199,0,0" TextWrapping="Wrap" Text="Daily Price" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="daily_price" HorizontalAlignment="Left" Height="30" Margin="151,195,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="38,265,0,0" TextWrapping="Wrap" Text="Current Stock" VerticalAlignment="Top" Height="30" Width="86"/>
-        <TextBox Name="current_stock" HorizontalAlignment="Left" Height="30" Margin="151,261,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="38,322,0,0" TextWrapping="Wrap" Text="Min Stock" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="minimum_stock" HorizontalAlignment="Left" Height="30" Margin="151,318,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="38,380,0,0" TextWrapping="Wrap" Text="Bundle Unit" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="bundle_unit" HorizontalAlignment="Left" Height="30" Margin="151,374,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="38,438,0,0" TextWrapping="Wrap" Text="Category" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="category" HorizontalAlignment="Left" Height="30" Margin="151,434,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="38,504,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top" Height="30" Width="86"/>
-        <TextBox Name="manufacturer" HorizontalAlignment="Left" Height="30" Margin="151,500,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" TextAlignment="Left" Margin="41,46,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Height="30" Width="73"/>
+        <TextBox Name="name" HorizontalAlignment="Left" Height="30" Margin="154,42,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,98,0,0" TextWrapping="Wrap" Text="Barcode" VerticalAlignment="Top" Height="30" Width="73"/>
+        <TextBox Name="barcode" HorizontalAlignment="Left" Height="30" Margin="154,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,150,0,0" TextWrapping="Wrap" Text="Daily Price" VerticalAlignment="Top" Height="30" Width="73"/>
+        <TextBox Name="daily_price" HorizontalAlignment="Left" Height="30" Margin="154,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,202,0,0" TextWrapping="Wrap" Text="Current Stock" VerticalAlignment="Top" Height="30" Width="86"/>
+        <TextBox Name="current_stock" HorizontalAlignment="Left" Height="30" Margin="154,198,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,252,0,0" TextWrapping="Wrap" Text="Min Stock" VerticalAlignment="Top" Height="30" Width="73"/>
+        <TextBox Name="minimum_stock" HorizontalAlignment="Left" Height="30" Margin="154,248,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,304,0,0" TextWrapping="Wrap" Text="Bundle Unit" VerticalAlignment="Top" Height="30" Width="73"/>
+        <TextBox Name="bundle_unit" HorizontalAlignment="Left" Height="30" Margin="154,298,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,356,0,0" TextWrapping="Wrap" Text="Category" VerticalAlignment="Top" Height="30" Width="73"/>
+        <TextBox Name="category" HorizontalAlignment="Left" Height="30" Margin="154,352,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <TextBlock HorizontalAlignment="Left" Margin="41,412,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top" Height="30" Width="86"/>
+        <TextBox Name="manufacturer" HorizontalAlignment="Left" Height="30" Margin="154,408,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
         
-        <Button Content="Modify" HorizontalAlignment="Left" Margin="128,573,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="modify_Click"/>
-        <Button Content="Add" HorizontalAlignment="Left" Margin="50,639,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="add_Click"/>
-        <Button Content="Delete" HorizontalAlignment="Left" Margin="212,639,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="delete_Click"/>
+        <Button Content="Modify" HorizontalAlignment="Left" Margin="136,472,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="modify_Click"/>
+        <Button Content="Add" HorizontalAlignment="Left" Margin="58,538,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="add_Click"/>
+        <Button Content="Delete" HorizontalAlignment="Left" Margin="220,538,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="delete_Click"/>
+        <TextBox Name="testTextBox" HorizontalAlignment="Left" Height="116" Margin="41,593,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="297"/>
     </Grid>
 </Window>
