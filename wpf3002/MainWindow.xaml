@@ -7,7 +7,7 @@
         <TabControl HorizontalAlignment="Left" Height="690" Margin="20,20,0,0" VerticalAlignment="Top" Width="1320">
             <TabItem Header="View All Products">
                 <Grid Background="#FFF9F9F9">
-                    <ListView Name="ListViewPriceList"   ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="347,52,0,0" VerticalAlignment="Top" Width="943" SelectionChanged="priceListSelectionChanged">
+                    <ListView Name="ListViewPriceList" IsSynchronizedWithCurrentItem="True"  ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="347,52,0,0" VerticalAlignment="Top" Width="943" SelectionChanged="priceListSelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding name}">
@@ -83,7 +83,7 @@
             </TabItem>
             <TabItem Header="Create Transaction">
                 <Grid Background="#FFF9F9F9">
-                    <ListView Name="ListViewLessInfo"  ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="TransactionSelectionChanged">
+                    <ListView Name="ListViewLessInfo" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="LessInfoSelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding name}">
@@ -122,15 +122,31 @@
                         </ListView.View>
                     </ListView>
                     <TextBlock HorizontalAlignment="Left" Margin="555,324,0,0" FontSize="50" TextWrapping="Wrap" Text="&amp;" VerticalAlignment="Top" Height="72" Width="45"/>
-                    <Button Content="→" Name="addTransaction" HorizontalAlignment="Left" FontSize="50" Margin="722,324,0,0" VerticalAlignment="Top" Width="76" Height="64" Click="addTransaction_Click"/>
-                    <ListView Name="ListViewTransaction" HorizontalAlignment="Left" Height="588" Margin="826,59,0,0" VerticalAlignment="Top" Width="148">
+                    <Button Content="&gt;" Name="addTransaction" HorizontalAlignment="Left" FontSize="50" Margin="724,316,0,0" VerticalAlignment="Top" Width="76" Height="80" Click="addTransaction_Click"/>
+                    <ListView Name="ListViewTransaction" ItemsSource="{Binding Path=oneTransaction}" HorizontalAlignment="Left" Height="588" Margin="826,59,0,0" VerticalAlignment="Top" Width="154" SelectionChanged="TransactionSelectionChanged">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Barcode"/>
-                                <GridViewColumn Header="Quantity"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding barcode}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding quantity}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
                             </GridView>
                         </ListView.View>
                     </ListView>
+                    <Button Content="Delete" Name="deleteTransaction" IsEnabled="False" HorizontalAlignment="Left" Margin="1078,193,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="deleteTransaction_Click"/>
+                    <Button Content="Cancel" Name="cancelTransaction" HorizontalAlignment="Left" Margin="1078,324,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="cancelTransaction_Click"/>
+                    <Button Content="Save" Name="saveTransaction" HorizontalAlignment="Left" Margin="1078,460,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="saveTransaction_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Create Transaction">
+                <Grid Background="#FFF9F9F9">
+                    
                 </Grid>
             </TabItem>
         </TabControl>

@@ -13,7 +13,7 @@ namespace wpf3002.DataStructure
             items = new List<KeyValuePair<string, string>>();
         }
         public List<KeyValuePair<String,String>> items{ get; set; }
-        public DateTime name { get; set; }
+        public DateTime date { get; set; }
         public void add(String barcode,String quantity)
         {
             try
@@ -25,4 +25,5 @@ namespace wpf3002.DataStructure
             }
         }
     }
+
 }

@@ -95,6 +95,22 @@ namespace wpf3002
             }
         }
 
+        ObservableCollection<DataStructure.transactionItem> _oneTransaction = new ObservableCollection<DataStructure.transactionItem>();
+        public ObservableCollection<DataStructure.transactionItem> oneTransaction
+        {
+            get
+            {
+                return this._oneTransaction;
+            }
+            set
+            {
+                if (value != this._oneTransaction)
+                {
+                    this._oneTransaction = value;
+                }
+            }
+        }
+
 
         private void lvUsersColumnHeader_Click(object sender, RoutedEventArgs e)
         {
@@ -368,8 +384,8 @@ namespace wpf3002
                     MessageBox.Show("Cannot find an item with barcode:" + barcodeSearchTransaction.Text);
                 }
         }
-        DataStructure.Item selectedItemForTransaction;
-        private void TransactionSelectionChanged(object sender, SelectionChangedEventArgs e)
+        DataStructure.Item selectedItemForLessInfo;
+        private void LessInfoSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBoxItem item = new ListBoxItem();
             try
@@ -382,9 +398,9 @@ namespace wpf3002
             }
             if (item != null)
             {
-                selectedItemForTransaction = (DataStructure.Item)item.Content;
+                selectedItemForLessInfo = (DataStructure.Item)item.Content;
                 quantity.Items.Clear();
-                for (int i = 0; i < Convert.ToInt32(selectedItemForTransaction.current_stock); i++)
+                for (int i = 0; i < Convert.ToInt32(selectedItemForLessInfo.current_stock); i++)
                 {
                     quantity.Items.Add(i+1);
                 }
@@ -395,14 +411,107 @@ namespace wpf3002
 
         private void addTransaction_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedItemForTransaction != null && quantity.SelectedItem != null)
-                transactionFromPC.add(selectedItemForTransaction.barcode,quantity.SelectedItem.ToString());
+            if (selectedItemForLessInfo != null && quantity.SelectedItem != null)
+            {
+                Boolean isChanged = false;
+                int tempQuantityTotal = Convert.ToInt32(quantity.SelectedItem);
+                for (int i = 0; i < transactionFromPC.items.Count; i++)
+                    if (transactionFromPC.items[i].Key == selectedItemForLessInfo.barcode)
+                    {
+                        tempQuantityTotal += Convert.ToInt32(transactionFromPC.items[i].Value);
+                        transactionFromPC.items[i] = new KeyValuePair<string,string>(transactionFromPC.items[i].Key, tempQuantityTotal.ToString());
+                        isChanged = true;
+                    }
+                if (!isChanged)
+                {
+                    transactionFromPC.add(selectedItemForLessInfo.barcode, quantity.SelectedItem.ToString());
+                    _allItems.Clear();
+                    foreach (var i in data)
+                        _allItems.Add(i);
+                    ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+                }
+                else
+                {
+                    _allItems.Clear();
+                    foreach (var i in data)
+                        _allItems.Add(i);
+                    ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+                }
+                for (int i = 0; i < data.Count; i++)
+                    if (data[i].barcode == selectedItemForLessInfo.barcode)
+                        data[i].current_stock = (Convert.ToInt32(selectedItemForLessInfo.current_stock) - Convert.ToInt32(quantity.SelectedItem)).ToString();
+            }
             else
                 MessageBox.Show("Please select both item and quantity!");
-            ListViewTransaction.Items.Clear();
+            _oneTransaction.Clear();
             for (int i = 0; i < transactionFromPC.items.Count; i++)
             {
-                ListViewTransaction.Items.Add(new { Barcode = transactionFromPC.items.ElementAt(i).Key, Quantity = transactionFromPC.items.ElementAt(i).Value });
+                _oneTransaction.Add(new DataStructure.transactionItem(transactionFromPC.items[i].Key,transactionFromPC.items[i].Value));
+            }
+        }
+        DataStructure.transactionItem selectedItemForTransaction;
+        private void TransactionSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBoxItem item = new ListBoxItem();
+            try
+            {
+                item = this.ListViewTransaction.ItemContainerGenerator.ContainerFromIndex(this.ListViewTransaction.SelectedIndex) as ListBoxItem;
+            }
+            catch
+            {
+                item = null;
+            }
+            if (item != null)
+            {
+                deleteTransaction.IsEnabled = true;
+                selectedItemForTransaction = (DataStructure.transactionItem)item.Content;
+            }
+            else
+                deleteTransaction.IsEnabled = false;
+        }
+
+        private void deleteTransaction_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < data.Count; i++)
+                if (data[i].barcode == selectedItemForTransaction.barcode)
+                    data[i].current_stock = (Convert.ToInt32(data[i].current_stock) + Convert.ToInt32(selectedItemForTransaction.quantity)).ToString();
+            for (int i = 0; i < transactionFromPC.items.Count;i++ )
+                if(transactionFromPC.items[i].Key == selectedItemForTransaction.barcode)
+                    transactionFromPC.items.RemoveAt(i);
+            _allItems.Clear();
+            _oneTransaction.Clear();
+            for (int i = 0; i < transactionFromPC.items.Count; i++)
+            {
+                _oneTransaction.Add(new DataStructure.transactionItem(transactionFromPC.items[i].Key, transactionFromPC.items[i].Value));
+            }
+            foreach (var i in data)
+                _allItems.Add(i);
+            ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+        }
+
+        private void cancelTransaction_Click(object sender, RoutedEventArgs e)
+        {
+            for (int j = 0; j < transactionFromPC.items.Count;j++ )
+                for (int i = 0; i < data.Count; i++)
+                    if (data[i].barcode == transactionFromPC.items[j].Key)
+                        data[i].current_stock = (Convert.ToInt32(data[i].current_stock) + Convert.ToInt32(transactionFromPC.items[j].Value)).ToString();
+            transactionFromPC.items.Clear();
+            _allItems.Clear();
+            _oneTransaction.Clear();
+            foreach (var i in data)
+                _allItems.Add(i);
+            ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+        }
+
+        private void saveTransaction_Click(object sender, RoutedEventArgs e)
+        {
+            transactionFromPC.date = DateTime.Now;
+            _wholeDayTransaction.Add(transactionFromPC);
+            transactionFromPC = new DataStructure.Transaction();
+            _oneTransaction.Clear();
+            for (int i = 0; i < transactionFromPC.items.Count; i++)
+            {
+                _oneTransaction.Add(new DataStructure.transactionItem(transactionFromPC.items[i].Key, transactionFromPC.items[i].Value));
             }
         }
 
