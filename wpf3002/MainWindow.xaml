@@ -114,16 +114,16 @@
                     </ListView>
                     <TextBox Name="barcodeSearchTransaction" HorizontalAlignment="Left" Height="24" Margin="307,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="195" KeyDown="BarcodeSearchTransaction_KeyDown"/>
                     <TextBlock HorizontalAlignment="Left" Margin="251,22,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top"/>
-                    <ListView Name="quantity" HorizontalAlignment="Left" Height="588" Margin="611,59,0,0" VerticalAlignment="Top" Width="86">
+                    <ListView Name="quantity" HorizontalAlignment="Left" Height="588" Margin="622,64,0,0" VerticalAlignment="Top" Width="86">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Quantity"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <TextBlock HorizontalAlignment="Left" Margin="555,324,0,0" FontSize="50" TextWrapping="Wrap" Text="&amp;" VerticalAlignment="Top" Height="72" Width="45"/>
-                    <Button Content="&gt;" Name="addTransaction" HorizontalAlignment="Left" FontSize="50" Margin="724,316,0,0" VerticalAlignment="Top" Width="76" Height="80" Click="addTransaction_Click"/>
-                    <ListView Name="ListViewTransaction" ItemsSource="{Binding Path=oneTransaction}" HorizontalAlignment="Left" Height="588" Margin="826,59,0,0" VerticalAlignment="Top" Width="154" SelectionChanged="TransactionSelectionChanged">
+                    <TextBlock HorizontalAlignment="Left" Margin="559,324,0,0" FontSize="50" TextWrapping="Wrap" Text="&amp;" VerticalAlignment="Top" Height="72" Width="45"/>
+                    <Button Content="&gt;" Name="addTransaction" HorizontalAlignment="Left" FontSize="50" Margin="736,316,0,0" VerticalAlignment="Top" Width="76" Height="80" Click="addTransaction_Click"/>
+                    <ListView Name="ListViewTransaction" ItemsSource="{Binding Path=oneTransaction}" HorizontalAlignment="Left" Height="588" Margin="846,59,0,0" VerticalAlignment="Top" Width="198" SelectionChanged="TransactionSelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding barcode}">
@@ -136,12 +136,17 @@
                                         <GridViewColumnHeader Tag="current_stock">current_stock</GridViewColumnHeader>
                                     </GridViewColumn.Header>
                                 </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding price}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock">price</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Button Content="Delete" Name="deleteTransaction" IsEnabled="False" HorizontalAlignment="Left" Margin="1078,193,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="deleteTransaction_Click"/>
-                    <Button Content="Cancel" Name="cancelTransaction" HorizontalAlignment="Left" Margin="1078,324,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="cancelTransaction_Click"/>
-                    <Button Content="Save" Name="saveTransaction" HorizontalAlignment="Left" Margin="1078,460,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="saveTransaction_Click"/>
+                    <Button Content="Delete" Name="deleteTransaction" IsEnabled="False" HorizontalAlignment="Left" Margin="1105,189,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="deleteTransaction_Click"/>
+                    <Button Content="Cancel" Name="cancelTransaction" HorizontalAlignment="Left" Margin="1105,320,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="cancelTransaction_Click"/>
+                    <Button Content="Save" Name="saveTransaction" HorizontalAlignment="Left" Margin="1105,456,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="saveTransaction_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="View Transaction">
@@ -186,6 +191,74 @@
                                 <GridViewColumn DisplayMemberBinding="{Binding quantity}">
                                     <GridViewColumn.Header>
                                         <GridViewColumnHeader Tag="daily_price">quantity</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Manage PriceTag">
+                <Grid Background="#FFF9F9F9">
+                    <ListView Name="ListViewLessInfo2" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="LessInfo2SelectionChanged">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding name}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="name" Click="lvUsersColumnHeader_Click">name</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding barcode}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="barcode" Click="lvUsersColumnHeader_Click">barcode</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding daily_price}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="daily_price" Click="lvUsersColumnHeader_Click">daily_price</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding current_stock}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <ListView Name="pricetagIDListView" HorizontalAlignment="Left" Height="588" Margin="622,64,0,0" VerticalAlignment="Top" Width="86">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="PriceTagID"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <TextBlock HorizontalAlignment="Left" Margin="559,324,0,0" FontSize="50" TextWrapping="Wrap" Text="&amp;" VerticalAlignment="Top" Height="72" Width="45"/>
+                    <Button Content="&gt;" Name="addPriceTag" HorizontalAlignment="Left" FontSize="50" Margin="736,316,0,0" VerticalAlignment="Top" Width="76" Height="80" Click="addPriceTag_Click" />
+                    <ListView Name="pricetagListView" ItemsSource="{Binding Path=pricetag}" HorizontalAlignment="Left" Height="588" Margin="846,59,0,0" VerticalAlignment="Top" Width="443">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding name}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock">name</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding barcode}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock">barcode</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding price}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock">price</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding pricetagID}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock">PriceTagID</GridViewColumnHeader>
                                     </GridViewColumn.Header>
                                 </GridViewColumn>
                             </GridView>

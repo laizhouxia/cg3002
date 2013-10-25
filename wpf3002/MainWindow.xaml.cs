@@ -125,6 +125,21 @@ namespace wpf3002
                 }
             }
         }
+        ObservableCollection<DataStructure.PriceTag> _pricetag = new ObservableCollection<DataStructure.PriceTag>();
+        public ObservableCollection<DataStructure.PriceTag> pricetag
+        {
+            get
+            {
+                return this._pricetag;
+            }
+            set
+            {
+                if (value != this._pricetag)
+                {
+                    this._pricetag = value;
+                }
+            }
+        }
 
 
         private void lvUsersColumnHeader_Click(object sender, RoutedEventArgs e)
@@ -214,7 +229,7 @@ namespace wpf3002
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await initial();
-
+            initialPriceTagId();
             //ThreadPool.QueueUserWorkItem((x) =>
             //{
             //    //while (true)
@@ -266,7 +281,7 @@ namespace wpf3002
 
         private DataStructure.Item readItem()
         {
-            return new DataStructure.Item(name.Text,barcode.Text,daily_price.Text,current_stock.Text,minimum_stock.Text,bundle_unit.Text,category.Text,manufacturer.Text);
+            return new DataStructure.Item(name.Text, barcode.Text, daily_price.Text, current_stock.Text, minimum_stock.Text, bundle_unit.Text, category.Text, manufacturer.Text);
         }
 
         private Boolean testBarcode(string bar)
@@ -355,8 +370,8 @@ namespace wpf3002
                         {
                             string receivedQuantity = message.Substring(2, 6);
                             if (oneItemBarcode != null)
-                                transaction.add(oneItemBarcode, receivedQuantity);
-                            oneItemBarcode = null;
+                                //transaction.add(oneItemBarcode, receivedQuantity);
+                                oneItemBarcode = null;
                             oneItemPrice = null;
                         }
                         if (message[0] == 'T' && message[1] == 'H')
@@ -381,7 +396,7 @@ namespace wpf3002
                 }
                 else
                 {
-                    MessageBox.Show("Cannot find an item with barcode:"+barcodeSearch.Text);
+                    MessageBox.Show("Cannot find an item with barcode:" + barcodeSearch.Text);
                 }
         }
 
@@ -400,6 +415,7 @@ namespace wpf3002
                 }
         }
         DataStructure.Item selectedItemForLessInfo;
+        DataStructure.Item selectedItemForLessInfo2;
         private void LessInfoSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBoxItem item = new ListBoxItem();
@@ -417,7 +433,7 @@ namespace wpf3002
                 quantity.Items.Clear();
                 for (int i = 0; i < Convert.ToInt32(selectedItemForLessInfo.current_stock); i++)
                 {
-                    quantity.Items.Add(i+1);
+                    quantity.Items.Add(i + 1);
                 }
             }
         }
@@ -431,15 +447,17 @@ namespace wpf3002
                 Boolean isChanged = false;
                 int tempQuantityTotal = Convert.ToInt32(quantity.SelectedItem);
                 for (int i = 0; i < transactionFromPC.items.Count; i++)
-                    if (transactionFromPC.items[i].Key == selectedItemForLessInfo.barcode)
+                    if (transactionFromPC.items[i].barcode == selectedItemForLessInfo.barcode)
                     {
-                        tempQuantityTotal += Convert.ToInt32(transactionFromPC.items[i].Value);
-                        transactionFromPC.items[i] = new KeyValuePair<string,string>(transactionFromPC.items[i].Key, tempQuantityTotal.ToString());
+                        tempQuantityTotal += Convert.ToInt32(transactionFromPC.items[i].quantity);
+                        transactionFromPC.items[i] = new DataStructure.transactionItem(transactionFromPC.items[i].barcode, tempQuantityTotal.ToString(), transactionFromPC.items[i].price);
                         isChanged = true;
                     }
                 if (!isChanged)
                 {
-                    transactionFromPC.add(selectedItemForLessInfo.barcode, quantity.SelectedItem.ToString());
+                    for (int i = 0; i < data.Count; i++)
+                        if (data[i].barcode == selectedItemForLessInfo.barcode)
+                            transactionFromPC.add(selectedItemForLessInfo.barcode, quantity.SelectedItem.ToString(), data[i].daily_price);
                     _allItems.Clear();
                     foreach (var i in data)
                         _allItems.Add(i);
@@ -461,7 +479,7 @@ namespace wpf3002
             _oneTransaction.Clear();
             for (int i = 0; i < transactionFromPC.items.Count; i++)
             {
-                _oneTransaction.Add(new DataStructure.transactionItem(transactionFromPC.items[i].Key,transactionFromPC.items[i].Value));
+                _oneTransaction.Add(transactionFromPC.items[i]);
             }
         }
         DataStructure.transactionItem selectedItemForTransaction;
@@ -490,14 +508,14 @@ namespace wpf3002
             for (int i = 0; i < data.Count; i++)
                 if (data[i].barcode == selectedItemForTransaction.barcode)
                     data[i].current_stock = (Convert.ToInt32(data[i].current_stock) + Convert.ToInt32(selectedItemForTransaction.quantity)).ToString();
-            for (int i = 0; i < transactionFromPC.items.Count;i++ )
-                if(transactionFromPC.items[i].Key == selectedItemForTransaction.barcode)
+            for (int i = 0; i < transactionFromPC.items.Count; i++)
+                if (transactionFromPC.items[i].barcode == selectedItemForTransaction.barcode)
                     transactionFromPC.items.RemoveAt(i);
             _allItems.Clear();
             _oneTransaction.Clear();
             for (int i = 0; i < transactionFromPC.items.Count; i++)
             {
-                _oneTransaction.Add(new DataStructure.transactionItem(transactionFromPC.items[i].Key, transactionFromPC.items[i].Value));
+                _oneTransaction.Add(transactionFromPC.items[i]);
             }
             foreach (var i in data)
                 _allItems.Add(i);
@@ -506,10 +524,10 @@ namespace wpf3002
 
         private void cancelTransaction_Click(object sender, RoutedEventArgs e)
         {
-            for (int j = 0; j < transactionFromPC.items.Count;j++ )
+            for (int j = 0; j < transactionFromPC.items.Count; j++)
                 for (int i = 0; i < data.Count; i++)
-                    if (data[i].barcode == transactionFromPC.items[j].Key)
-                        data[i].current_stock = (Convert.ToInt32(data[i].current_stock) + Convert.ToInt32(transactionFromPC.items[j].Value)).ToString();
+                    if (data[i].barcode == transactionFromPC.items[j].barcode)
+                        data[i].current_stock = (Convert.ToInt32(data[i].current_stock) + Convert.ToInt32(transactionFromPC.items[j].quantity)).ToString();
             transactionFromPC.items.Clear();
             _allItems.Clear();
             _oneTransaction.Clear();
@@ -526,7 +544,7 @@ namespace wpf3002
             _oneTransaction.Clear();
             for (int i = 0; i < transactionFromPC.items.Count; i++)
             {
-                _oneTransaction.Add(new DataStructure.transactionItem(transactionFromPC.items[i].Key, transactionFromPC.items[i].Value));
+                _oneTransaction.Add(transactionFromPC.items[i]);
             }
         }
 
@@ -547,9 +565,50 @@ namespace wpf3002
                 _oneTransactionView.Clear();
                 for (int i = 0; i < tempTransaction.items.Count; i++)
                     for (int j = 0; j < data.Count; j++)
-                        if (data[j].barcode == tempTransaction.items[i].Key)
-                            _oneTransactionView.Add(new DataStructure.TransactionViewItem(data[j].name,data[j].barcode,data[j].daily_price,tempTransaction.items[i].Value));
-            }                                                                                                                                                                   
+                        if (data[j].barcode == tempTransaction.items[i].barcode)
+                            _oneTransactionView.Add(new DataStructure.TransactionViewItem(data[j].name, data[j].barcode, data[j].daily_price, tempTransaction.items[i].quantity));
+            }
+        }
+        string[] a = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+        string[] b = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+        private void initialPriceTagId()
+        {
+            for (int i = 0; i < a.Length; i++)
+                for (int j = 0; j < b.Length; j++)
+                    pricetagIDListView.Items.Add(a[i]+b[j]);
+        }
+
+        private void LessInfo2SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBoxItem item = new ListBoxItem();
+            try
+            {
+                item = this.ListViewLessInfo2.ItemContainerGenerator.ContainerFromIndex(this.ListViewLessInfo2.SelectedIndex) as ListBoxItem;
+            }
+            catch
+            {
+                item = null;
+            }
+            if (item != null)
+            {
+                selectedItemForLessInfo2 = (DataStructure.Item)item.Content;
+            }
+        }
+
+        private void addPriceTag_Click(object sender, RoutedEventArgs e)
+        {
+            if (pricetagIDListView.SelectedItem != null && selectedItemForLessInfo2 != null)
+            {
+                for (int i = 0; i < pricetag.Count; i++)
+                    if (pricetag[i].pricetagID == pricetagIDListView.SelectedItem.ToString())
+                        pricetag.RemoveAt(i);
+                    DataStructure.PriceTag tempTag = new DataStructure.PriceTag(selectedItemForLessInfo2.name, selectedItemForLessInfo2.barcode, selectedItemForLessInfo2.daily_price, pricetagIDListView.SelectedItem.ToString());
+                    pricetag.Add(tempTag);
+            }
+            else
+            {
+                MessageBox.Show("Please select both id and barcode!!");
+            }
         }
 
     }

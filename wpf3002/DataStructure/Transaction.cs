@@ -10,19 +10,19 @@ namespace wpf3002.DataStructure
     {
         public Transaction() 
         {
-            items = new List<KeyValuePair<string, string>>();
+            items = new List<transactionItem>();
             totalQuantity = 0;
             totalPrice = 0;
         }
-        public List<KeyValuePair<String,String>> items{ get; set; }
+        public List<transactionItem> items { get; set; }
         public DateTime date { get; set; }
         public Int32 totalQuantity { get; set; }
         public Double totalPrice { get; set; }
-        public void add(String barcode,String quantity)
+        public void add(String barcode,String quantity,String price)
         {
             try
             {
-                items.Add(new KeyValuePair<String, String>(barcode, quantity));
+                items.Add(new transactionItem(barcode,quantity,price));
                 totalQuantity++;
             }
             catch

@@ -62,6 +62,7 @@
     </ApplicationDefinition>
     <Compile Include="DataStructure\Item.cs" />
     <Compile Include="DataStructure\PriceList.cs" />
+    <Compile Include="DataStructure\PriceTag.cs" />
     <Compile Include="DataStructure\Transaction.cs" />
     <Compile Include="DataStructure\transactionItem.cs" />
     <Compile Include="DataStructure\TransactionViewItem.cs" />
