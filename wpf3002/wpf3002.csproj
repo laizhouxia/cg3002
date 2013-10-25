@@ -64,6 +64,7 @@
     <Compile Include="DataStructure\PriceList.cs" />
     <Compile Include="DataStructure\Transaction.cs" />
     <Compile Include="DataStructure\transactionItem.cs" />
+    <Compile Include="DataStructure\TransactionViewItem.cs" />
     <Compile Include="Functions\RequestSender.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

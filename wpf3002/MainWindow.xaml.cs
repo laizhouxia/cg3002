@@ -110,6 +110,21 @@ namespace wpf3002
                 }
             }
         }
+        ObservableCollection<DataStructure.TransactionViewItem> _oneTransactionView = new ObservableCollection<DataStructure.TransactionViewItem>();
+        public ObservableCollection<DataStructure.TransactionViewItem> oneTransactionView
+        {
+            get
+            {
+                return this._oneTransactionView;
+            }
+            set
+            {
+                if (value != this._oneTransactionView)
+                {
+                    this._oneTransactionView = value;
+                }
+            }
+        }
 
 
         private void lvUsersColumnHeader_Click(object sender, RoutedEventArgs e)
@@ -513,6 +528,28 @@ namespace wpf3002
             {
                 _oneTransaction.Add(new DataStructure.transactionItem(transactionFromPC.items[i].Key, transactionFromPC.items[i].Value));
             }
+        }
+
+        private void AllTransactionSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBoxItem item = new ListBoxItem();
+            try
+            {
+                item = this.ListViewAllTransaction.ItemContainerGenerator.ContainerFromIndex(this.ListViewAllTransaction.SelectedIndex) as ListBoxItem;
+            }
+            catch
+            {
+                item = null;
+            }
+            if (item != null)
+            {
+                DataStructure.Transaction tempTransaction = (DataStructure.Transaction)item.Content;
+                _oneTransactionView.Clear();
+                for (int i = 0; i < tempTransaction.items.Count; i++)
+                    for (int j = 0; j < data.Count; j++)
+                        if (data[j].barcode == tempTransaction.items[i].Key)
+                            _oneTransactionView.Add(new DataStructure.TransactionViewItem(data[j].name,data[j].barcode,data[j].daily_price,tempTransaction.items[i].Value));
+            }                                                                                                                                                                   
         }
 
     }

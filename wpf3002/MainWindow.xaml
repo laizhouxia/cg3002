@@ -128,12 +128,12 @@
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding barcode}">
                                     <GridViewColumn.Header>
-                                        <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
+                                        <GridViewColumnHeader Tag="current_stock">current_stock</GridViewColumnHeader>
                                     </GridViewColumn.Header>
                                 </GridViewColumn>
                                 <GridViewColumn DisplayMemberBinding="{Binding quantity}">
                                     <GridViewColumn.Header>
-                                        <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
+                                        <GridViewColumnHeader Tag="current_stock">current_stock</GridViewColumnHeader>
                                     </GridViewColumn.Header>
                                 </GridViewColumn>
                             </GridView>
@@ -144,9 +144,53 @@
                     <Button Content="Save" Name="saveTransaction" HorizontalAlignment="Left" Margin="1078,460,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="saveTransaction_Click"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Create Transaction">
+            <TabItem Header="View Transaction">
                 <Grid Background="#FFF9F9F9">
-                    
+                    <ListView Name="ListViewAllTransaction" IsSynchronizedWithCurrentItem="True"  ItemsSource="{Binding Path=wholeDayTransaction}" HorizontalAlignment="Left" Height="588" Margin="50,46,0,0" VerticalAlignment="Top" Width="310" SelectionChanged="AllTransactionSelectionChanged" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding date}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="name">Date</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding totalQuantity}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="name">Quantity</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <ListView Name="ListViewTransactionView" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=oneTransactionView}" HorizontalAlignment="Left" Height="588" Margin="400,46,0,0" VerticalAlignment="Top" Width="874">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding name}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="name" >name</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding barcode}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="barcode" >barcode</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding price}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="daily_price">price</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding quantity}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="daily_price">quantity</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </Grid>
             </TabItem>
         </TabControl>
