@@ -6,14 +6,23 @@ using System.Threading.Tasks;
 
 namespace wpf3002.DataStructure
 {
-    class Transaction
+    public class Transaction
     {
-        public Transaction() { }
-        public List<KeyValuePair<String,String>> oneItem{ get; set; }
+        public Transaction() 
+        {
+            items = new List<KeyValuePair<string, string>>();
+        }
+        public List<KeyValuePair<String,String>> items{ get; set; }
         public DateTime name { get; set; }
         public void add(String barcode,String quantity)
         {
-            oneItem.Add(new KeyValuePair<String,String>( barcode,quantity));
+            try
+            {
+                items.Add(new KeyValuePair<String, String>(barcode, quantity));
+            }
+            catch
+            {
+            }
         }
     }
 }

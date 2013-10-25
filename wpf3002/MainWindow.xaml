@@ -4,80 +4,135 @@
         Title="MainWindow" Height="768" Width="1366"
         Loaded="Window_Loaded">
     <Grid>
-        <ListView Name="ListViewPriceList"  IsSynchronizedWithCurrentItem ="True"  ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="681" Margin="388,28,0,0" VerticalAlignment="Top" Width="943" SelectionChanged="priceListSelectionChanged">
-            <ListView.View>
-                <GridView>
+        <TabControl HorizontalAlignment="Left" Height="690" Margin="20,20,0,0" VerticalAlignment="Top" Width="1320">
+            <TabItem Header="View All Products">
+                <Grid Background="#FFF9F9F9">
+                    <ListView Name="ListViewPriceList"   ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="347,52,0,0" VerticalAlignment="Top" Width="943" SelectionChanged="priceListSelectionChanged">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding name}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="name" Click="lvUsersColumnHeader_Click">name</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding name}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="name" Click="lvUsersColumnHeader_Click">name</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding barcode}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="barcode" Click="lvUsersColumnHeader_Click">barcode</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding barcode}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="barcode" Click="lvUsersColumnHeader_Click">barcode</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding daily_price}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="daily_price" Click="lvUsersColumnHeader_Click">daily_price</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding daily_price}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="daily_price" Click="lvUsersColumnHeader_Click">daily_price</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding current_stock}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding current_stock}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding minimum_stock}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="minimum_stock" Click="lvUsersColumnHeader_Click">minimum_stock</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding minimum_stock}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="minimum_stock" Click="lvUsersColumnHeader_Click">minimum_stock</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding bundle_unit}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="bundle_unit" Click="lvUsersColumnHeader_Click">bundle_unit</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding bundle_unit}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="bundle_unit" Click="lvUsersColumnHeader_Click">bundle_unit</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding category}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="category" Click="lvUsersColumnHeader_Click">category</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding category}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="category" Click="lvUsersColumnHeader_Click">category</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
+                                <GridViewColumn DisplayMemberBinding="{Binding manufacturer}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="manufacturer" Click="lvUsersColumnHeader_Click">manufacturer</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <TextBlock HorizontalAlignment="Left" TextAlignment="Left" Margin="27,62,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Height="30" Width="73"/>
+                    <TextBox Name="name" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,114,0,0" TextWrapping="Wrap" Text="Barcode" VerticalAlignment="Top" Height="30" Width="73"/>
+                    <TextBox Name="barcode" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,166,0,0" TextWrapping="Wrap" Text="Daily Price" VerticalAlignment="Top" Height="30" Width="73"/>
+                    <TextBox Name="daily_price" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,162,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,218,0,0" TextWrapping="Wrap" Text="Current Stock" VerticalAlignment="Top" Height="30" Width="86"/>
+                    <TextBox Name="current_stock" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,214,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,268,0,0" TextWrapping="Wrap" Text="Min Stock" VerticalAlignment="Top" Height="30" Width="73"/>
+                    <TextBox Name="minimum_stock" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,264,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,320,0,0" TextWrapping="Wrap" Text="Bundle Unit" VerticalAlignment="Top" Height="30" Width="73"/>
+                    <TextBox Name="bundle_unit" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,314,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,372,0,0" TextWrapping="Wrap" Text="Category" VerticalAlignment="Top" Height="30" Width="73"/>
+                    <TextBox Name="category" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,368,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="27,428,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top" Height="30" Width="86"/>
+                    <TextBox Name="manufacturer" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,424,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+                    <TextBox Name="testTextBox" IsEnabled="False" HorizontalAlignment="Left" Height="116" Margin="28,511,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="284"/>
+                    <TextBox Name="barcodeSearch" HorizontalAlignment="Left" Height="23" Margin="1084,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="195" KeyDown="BarcodeSearch_KeyDown"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="1028,22,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Create Transaction">
+                <Grid Background="#FFF9F9F9">
+                    <ListView Name="ListViewLessInfo"  ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="TransactionSelectionChanged">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding name}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="name" Click="lvUsersColumnHeader_Click">name</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
 
-                    <GridViewColumn DisplayMemberBinding="{Binding manufacturer}">
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader Tag="manufacturer" Click="lvUsersColumnHeader_Click">manufacturer</GridViewColumnHeader>
-                        </GridViewColumn.Header>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
-        <TextBlock HorizontalAlignment="Left" TextAlignment="Left" Margin="41,46,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="name" HorizontalAlignment="Left" Height="30" Margin="154,42,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,98,0,0" TextWrapping="Wrap" Text="Barcode" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="barcode" HorizontalAlignment="Left" Height="30" Margin="154,92,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,150,0,0" TextWrapping="Wrap" Text="Daily Price" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="daily_price" HorizontalAlignment="Left" Height="30" Margin="154,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,202,0,0" TextWrapping="Wrap" Text="Current Stock" VerticalAlignment="Top" Height="30" Width="86"/>
-        <TextBox Name="current_stock" HorizontalAlignment="Left" Height="30" Margin="154,198,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,252,0,0" TextWrapping="Wrap" Text="Min Stock" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="minimum_stock" HorizontalAlignment="Left" Height="30" Margin="154,248,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,304,0,0" TextWrapping="Wrap" Text="Bundle Unit" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="bundle_unit" HorizontalAlignment="Left" Height="30" Margin="154,298,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,356,0,0" TextWrapping="Wrap" Text="Category" VerticalAlignment="Top" Height="30" Width="73"/>
-        <TextBox Name="category" HorizontalAlignment="Left" Height="30" Margin="154,352,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <TextBlock HorizontalAlignment="Left" Margin="41,412,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top" Height="30" Width="86"/>
-        <TextBox Name="manufacturer" HorizontalAlignment="Left" Height="30" Margin="154,408,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        
-        <Button Content="Modify" HorizontalAlignment="Left" Margin="136,472,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="modify_Click"/>
-        <Button Content="Add" HorizontalAlignment="Left" Margin="58,538,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="add_Click"/>
-        <Button Content="Delete" HorizontalAlignment="Left" Margin="220,538,0,0" VerticalAlignment="Top" Width="96" Height="34" Click="delete_Click"/>
-        <TextBox Name="testTextBox" HorizontalAlignment="Left" Height="116" Margin="41,593,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="297"/>
+                                <GridViewColumn DisplayMemberBinding="{Binding barcode}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="barcode" Click="lvUsersColumnHeader_Click">barcode</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding daily_price}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="daily_price" Click="lvUsersColumnHeader_Click">daily_price</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+
+                                <GridViewColumn DisplayMemberBinding="{Binding current_stock}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="current_stock" Click="lvUsersColumnHeader_Click">current_stock</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <TextBox Name="barcodeSearchTransaction" HorizontalAlignment="Left" Height="24" Margin="307,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="195" KeyDown="BarcodeSearchTransaction_KeyDown"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="251,22,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top"/>
+                    <ListView Name="quantity" HorizontalAlignment="Left" Height="588" Margin="611,59,0,0" VerticalAlignment="Top" Width="86">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Quantity"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <TextBlock HorizontalAlignment="Left" Margin="555,324,0,0" FontSize="50" TextWrapping="Wrap" Text="&amp;" VerticalAlignment="Top" Height="72" Width="45"/>
+                    <Button Content="→" Name="addTransaction" HorizontalAlignment="Left" FontSize="50" Margin="722,324,0,0" VerticalAlignment="Top" Width="76" Height="64" Click="addTransaction_Click"/>
+                    <ListView Name="ListViewTransaction" HorizontalAlignment="Left" Height="588" Margin="826,59,0,0" VerticalAlignment="Top" Width="148">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Barcode"/>
+                                <GridViewColumn Header="Quantity"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

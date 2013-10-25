@@ -22,7 +22,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.IO.Ports;
-
+using System.Data;
 
 namespace wpf3002
 {
@@ -36,7 +36,7 @@ namespace wpf3002
         {
             this.DataContext = this;
             InitializeComponent();
-            disableAllTextBox();
+            //disableAllTextBox();
             //initial();
             //ListViewPriceList.ItemsSource = priceList.allItems;
         }
@@ -63,7 +63,6 @@ namespace wpf3002
         ObservableCollection<DataStructure.Item> data;
         ObservableCollection<DataStructure.Item> _allItems = new ObservableCollection<DataStructure.Item>();
         DataStructure.Item selectedItem;
-        DataStructure.Item prevSelectedItem;
 
         public ObservableCollection<DataStructure.Item> allItems
         {
@@ -79,6 +78,23 @@ namespace wpf3002
                 }
             }
         }
+
+        ObservableCollection<DataStructure.Transaction> _wholeDayTransaction = new ObservableCollection<DataStructure.Transaction>();
+        public ObservableCollection<DataStructure.Transaction> wholeDayTransaction
+        {
+            get
+            {
+                return this._wholeDayTransaction;
+            }
+            set
+            {
+                if (value != this._wholeDayTransaction)
+                {
+                    this._wholeDayTransaction = value;
+                }
+            }
+        }
+
 
         private void lvUsersColumnHeader_Click(object sender, RoutedEventArgs e)
         {
@@ -167,19 +183,18 @@ namespace wpf3002
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await initial();
-            initialSerialPort();
+
             //ThreadPool.QueueUserWorkItem((x) =>
             //{
-            //    while (true)
-            //    {
-            //        Dispatcher.BeginInvoke((Action)(() =>
-            //        {
-            //            // mFileNames.Add(new FileInfo("X"));
+            //    //while (true)
+            //    //{
+            //    //    Dispatcher.BeginInvoke((Action)(() =>
+            //    //    {
 
-            //            _allItems.Add(new DataStructure.Item("1", "1", "1", "1", "1", "1", "1", "1"));
-            //        }));
-            //        Thread.Sleep(500);
-            //    }
+            //    //    }));
+            //    //    Thread.Sleep(500);
+            //    //}
+            //    initialSerialPort();
             //});
         }
 
@@ -199,7 +214,7 @@ namespace wpf3002
             {
                 selectedItem = (DataStructure.Item)item.Content;
                 setAllTextBox(selectedItem);
-                enableAllTextBox();
+                //enableAllTextBox();
             }
         }
 
@@ -217,28 +232,6 @@ namespace wpf3002
             manufacturer.Text = item.manufacturer;
         }
 
-        private void disableAllTextBox()
-        {
-            name.IsEnabled = false;
-            barcode.IsEnabled = false;
-            daily_price.IsEnabled = false;
-            current_stock.IsEnabled = false;
-            minimum_stock.IsEnabled = false;
-            bundle_unit.IsEnabled = false;
-            category.IsEnabled = false;
-            manufacturer.IsEnabled = false;
-        }
-        private void enableAllTextBox()
-        {
-            name.IsEnabled = true;
-            barcode.IsEnabled = true;
-            daily_price.IsEnabled = true;
-            current_stock.IsEnabled = true;
-            minimum_stock.IsEnabled = true;
-            bundle_unit.IsEnabled = true;
-            category.IsEnabled = true;
-            manufacturer.IsEnabled = true;
-        }
 
         private DataStructure.Item readItem()
         {
@@ -253,73 +246,11 @@ namespace wpf3002
             return false;
         }
 
-        private void modify_Click(object sender, RoutedEventArgs e)
-        {
-            String temp_barcode = selectedItem.barcode;
-            prevSelectedItem = readItem();
-            selectedItem = null;
-            foreach (var itm in data)
-            {
-                if (itm.barcode == temp_barcode)
-                {
-                    data.Remove(itm);
-                    break;
-                }
-            }
-            foreach (var itm in _allItems)
-            {
-                if (itm.barcode == temp_barcode)
-                {
-                    _allItems.Remove(itm);
-                    break;
-                }
-            }
-            if (!testBarcode(barcode.Text))
-            {
-                data.Add(prevSelectedItem);
-                _allItems.Add(prevSelectedItem);
-            }
-            else
-                MessageBox.Show("Barcode is exist!!!");
-        }
-
-        private void add_Click(object sender, RoutedEventArgs e)
-        {
-            if (!testBarcode(barcode.Text))
-            {
-                data.Add(readItem());
-                _allItems.Add(readItem());
-            }
-            else
-                MessageBox.Show("Barcode is exist!!!");
-        }
-
-        private void delete_Click(object sender, RoutedEventArgs e)
-        {
-            String temp_barcode = selectedItem.barcode;
-            selectedItem = null;
-            foreach (var itm in data)
-            {
-                if (itm.barcode == temp_barcode)
-                {
-                    data.Remove(itm);
-                    break;
-                }
-            }
-            foreach (var itm in _allItems)
-            {
-                if (itm.barcode == temp_barcode)
-                {
-                    _allItems.Remove(itm);
-                    break;
-                }
-            }
-        }
 
         static bool _continue;
         static SerialPort _serialPort;
         DataStructure.Transaction transaction = new DataStructure.Transaction();
-        List<DataStructure.Transaction> wholeDayTransaction = new List<DataStructure.Transaction>();
+
         String oneItemBarcode = null;
         String oneItemPrice = null;
 
@@ -329,13 +260,15 @@ namespace wpf3002
             Thread readThread = new Thread(Read);
 
             // Create a new SerialPort object with default settings.
-            _serialPort = new SerialPort("COM4");
+            _serialPort = new SerialPort("COM3");
 
             // Allow the user to set the appropriate properties.
             _serialPort.BaudRate = 9600;
             _serialPort.Parity = Parity.None;
-            _serialPort.StopBits = StopBits.One;
+            _serialPort.StopBits = StopBits.Two;
             _serialPort.DataBits = 8;
+            _serialPort.Encoding = Encoding.ASCII;
+            _serialPort.ReadBufferSize = 128;
             _serialPort.Handshake = Handshake.None;
 
             // Set the read/write timeouts
@@ -343,6 +276,7 @@ namespace wpf3002
             _serialPort.WriteTimeout = 500;
 
             _serialPort.Open();
+            //testTextBox.Text += "open serial port successful! \r\n";
             _continue = true;
             readThread.Start();
 
@@ -350,14 +284,19 @@ namespace wpf3002
             {
                 if (oneItemPrice == null && oneItemBarcode != null)
                 {
-                    
+
                     for (int i = 0; i < data.Count; i++)
                         if (oneItemBarcode == data[i].barcode)
                         {
                             oneItemPrice = data[i].daily_price;
-                            _serialPort.WriteLine("O1"+oneItemPrice);
+                            _serialPort.WriteLine("O1" + oneItemPrice);
                         }
                 }
+                else if (oneItemBarcode == null)
+                    _serialPort.WriteLine("I1B");
+                else
+                    _serialPort.WriteLine("I1Q");
+
             }
 
             readThread.Join();
@@ -371,6 +310,7 @@ namespace wpf3002
                 try
                 {
                     string message = _serialPort.ReadLine();
+                    testTextBox.Text += message + "\r\n";
                     if (message != null && message.Length > 7)
                     {
                         if (message[0] == 'B' && message[1] == 'C')
@@ -398,5 +338,73 @@ namespace wpf3002
                 catch (TimeoutException) { }
             }
         }
+
+        private void BarcodeSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+                if (testBarcode(barcodeSearch.Text))
+                {
+                    foreach (var i in _allItems)
+                        if (i.barcode == barcodeSearch.Text)
+                            ListViewPriceList.SelectedItem = i;
+                }
+                else
+                {
+                    MessageBox.Show("Cannot find an item with barcode:"+barcodeSearch.Text);
+                }
+        }
+
+        private void BarcodeSearchTransaction_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+                if (testBarcode(barcodeSearchTransaction.Text))
+                {
+                    foreach (var i in _allItems)
+                        if (i.barcode == barcodeSearchTransaction.Text)
+                            ListViewLessInfo.SelectedItem = i;
+                }
+                else
+                {
+                    MessageBox.Show("Cannot find an item with barcode:" + barcodeSearchTransaction.Text);
+                }
+        }
+        DataStructure.Item selectedItemForTransaction;
+        private void TransactionSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBoxItem item = new ListBoxItem();
+            try
+            {
+                item = this.ListViewLessInfo.ItemContainerGenerator.ContainerFromIndex(this.ListViewLessInfo.SelectedIndex) as ListBoxItem;
+            }
+            catch
+            {
+                item = null;
+            }
+            if (item != null)
+            {
+                selectedItemForTransaction = (DataStructure.Item)item.Content;
+                quantity.Items.Clear();
+                for (int i = 0; i < Convert.ToInt32(selectedItemForTransaction.current_stock); i++)
+                {
+                    quantity.Items.Add(i+1);
+                }
+            }
+        }
+
+        DataStructure.Transaction transactionFromPC = new DataStructure.Transaction();
+
+        private void addTransaction_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedItemForTransaction != null && quantity.SelectedItem != null)
+                transactionFromPC.add(selectedItemForTransaction.barcode,quantity.SelectedItem.ToString());
+            else
+                MessageBox.Show("Please select both item and quantity!");
+            ListViewTransaction.Items.Clear();
+            for (int i = 0; i < transactionFromPC.items.Count; i++)
+            {
+                ListViewTransaction.Items.Add(new { Barcode = transactionFromPC.items.ElementAt(i).Key, Quantity = transactionFromPC.items.ElementAt(i).Value });
+            }
+        }
+
     }
 }
