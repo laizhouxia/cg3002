@@ -453,7 +453,7 @@ namespace wpf3002
         {
             if (selectedItemForLessInfo != null && quantity.Text.ToString() != "")
             {
-                Boolean isChanged = false;
+
                 int tempQuantityTotal;
                 Boolean isIneter = Int32.TryParse(quantity.Text.ToString(), out tempQuantityTotal);
                 if (!isIneter)
@@ -464,19 +464,23 @@ namespace wpf3002
                         if (data[j].barcode == selectedItemForLessInfo.barcode)
                             if (Convert.ToInt32(selectedItemForLessInfo.current_stock) >= Convert.ToInt32(quantity.Text.ToString()))
                             {
-
+                                Boolean isChanged = false;
                                 for (int i = 0; i < transactionFromPC.items.Count; i++)
                                     if (transactionFromPC.items[i].barcode == selectedItemForLessInfo.barcode)
                                     {
                                         tempQuantityTotal += Convert.ToInt32(transactionFromPC.items[i].quantity);
                                         transactionFromPC.items[i] = new DataStructure.transactionItem(transactionFromPC.items[i].barcode, tempQuantityTotal.ToString(), transactionFromPC.items[i].price);
                                         isChanged = true;
+                                        break;
                                     }
                                 if (!isChanged)
                                 {
                                     for (int i = 0; i < data.Count; i++)
                                         if (data[i].barcode == selectedItemForLessInfo.barcode)
+                                        {
                                             transactionFromPC.add(selectedItemForLessInfo.barcode, quantity.Text.ToString(), data[i].daily_price);
+                                            break;
+                                        }
                                     _allItems.Clear();
                                     foreach (var i in data)
                                         _allItems.Add(i);
@@ -492,11 +496,17 @@ namespace wpf3002
                                 for (int i = 0; i < data.Count; i++)
                                     if (data[i].barcode == selectedItemForLessInfo.barcode)
                                         data[i].current_stock = (Convert.ToInt32(selectedItemForLessInfo.current_stock) - Convert.ToInt32(quantity.Text.ToString())).ToString();
+                                break;
                             }
                             else
+                            {
                                 MessageBox.Show("Please type in correct number..");
+                                break;
+                            }
                 }
             }
+            else
+                MessageBox.Show("Please select both item and quantity!!");
             _oneTransaction.Clear();
             for (int i = 0; i < transactionFromPC.items.Count; i++)
             {
@@ -735,11 +745,24 @@ namespace wpf3002
                 }
             }
             String filename = "data" + todayDateForFileName + ".txt";
-            TextWriter tw = new StreamWriter(filename);
-            foreach (var i in allExportItem)
-                tw.WriteLine(i.barcode + ":" + i.quantity + ":" + i.price + ":" + i.date);
-            tw.Close();
-            MessageBox.Show("Export File Successful!!!");
+
+            Microsoft.Win32.SaveFileDialog savefile = new Microsoft.Win32.SaveFileDialog();
+            savefile.DefaultExt = ".text"; // Default file extension
+            savefile.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+            // Show save file dialog box
+            Nullable<bool> result = savefile.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                StreamWriter sw = new StreamWriter(savefile.FileName);
+                foreach (var i in allExportItem)
+                    sw.WriteLine(i.barcode + ":" + i.quantity + ":" + i.price + ":" + i.date);
+                sw.Close();
+                MessageBox.Show("Export File Successful!!!");
+            }
+
         }
 
     }
