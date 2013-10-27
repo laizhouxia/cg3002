@@ -147,6 +147,7 @@
                     <Button Content="Delete" Name="deleteTransaction" IsEnabled="False" HorizontalAlignment="Left" Margin="1105,189,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="deleteTransaction_Click"/>
                     <Button Content="Cancel" Name="cancelTransaction" HorizontalAlignment="Left" Margin="1105,320,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="cancelTransaction_Click"/>
                     <Button Content="Save" Name="saveTransaction" HorizontalAlignment="Left" Margin="1105,456,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="saveTransaction_Click"/>
+                    <Button Content="Load" HorizontalAlignment="Left" Margin="1105,81,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="loadTransaction_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="View Transaction">

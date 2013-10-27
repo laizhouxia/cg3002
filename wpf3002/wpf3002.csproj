@@ -60,6 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataStructure\AllTransaction.cs" />
     <Compile Include="DataStructure\Item.cs" />
     <Compile Include="DataStructure\PriceList.cs" />
     <Compile Include="DataStructure\PriceTag.cs" />
