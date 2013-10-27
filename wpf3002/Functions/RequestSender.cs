@@ -18,7 +18,7 @@ namespace wpf3002.Functions
                 HttpClient client = new HttpClient();
 
                 // http get request to validate token
-                HttpResponseMessage response = await client.GetAsync("http://cg3002.herokuapp.com/api/price_list.json");
+                HttpResponseMessage response = await client.GetAsync("http://cg3002.herokuapp.com/api/stores/1/price_list.json");
 
                 // make sure the http reponse is successful
                 response.EnsureSuccessStatusCode();

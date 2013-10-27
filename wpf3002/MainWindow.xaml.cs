@@ -32,13 +32,12 @@ namespace wpf3002
 
     public partial class MainWindow : Window
     {
+        String todayDate = "30/9/2013";
+        String todayDateForFileName = "30_9_2013";
         public MainWindow()
         {
             this.DataContext = this;
             InitializeComponent();
-            //disableAllTextBox();
-            //initial();
-            //ListViewPriceList.ItemsSource = priceList.allItems;
         }
 
         private async Task initial()
@@ -229,6 +228,7 @@ namespace wpf3002
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await initial();
+            MessageBox.Show("Sync complete!!");
             initialPriceTagId();
             //ThreadPool.QueueUserWorkItem((x) =>
             //{
@@ -392,7 +392,15 @@ namespace wpf3002
                 {
                     foreach (var i in _allItems)
                         if (i.barcode == barcodeSearch.Text)
+                        {
                             ListViewPriceList.SelectedItem = i;
+                            ListViewPriceList.ScrollIntoView(ListViewPriceList.SelectedItem);
+                            ListViewItem item = ListViewPriceList.ItemContainerGenerator.ContainerFromItem(ListViewPriceList.SelectedItem) as ListViewItem;
+                            item.Focus();
+                            selectedItem = (DataStructure.Item)item.Content;
+                            setAllTextBox(selectedItem);
+                        }
+
                 }
                 else
                 {
@@ -407,7 +415,12 @@ namespace wpf3002
                 {
                     foreach (var i in _allItems)
                         if (i.barcode == barcodeSearchTransaction.Text)
+                        {
                             ListViewLessInfo.SelectedItem = i;
+                            ListViewLessInfo.ScrollIntoView(ListViewLessInfo.SelectedItem);
+                            ListViewItem item = ListViewLessInfo.ItemContainerGenerator.ContainerFromItem(ListViewLessInfo.SelectedItem) as ListViewItem;
+                            item.Focus();
+                        };
                 }
                 else
                 {
@@ -430,11 +443,7 @@ namespace wpf3002
             if (item != null)
             {
                 selectedItemForLessInfo = (DataStructure.Item)item.Content;
-                quantity.Items.Clear();
-                for (int i = 0; i < Convert.ToInt32(selectedItemForLessInfo.current_stock); i++)
-                {
-                    quantity.Items.Add(i + 1);
-                }
+                quantity.Text = "";
             }
         }
 
@@ -442,40 +451,52 @@ namespace wpf3002
 
         private void addTransaction_Click(object sender, RoutedEventArgs e)
         {
-            if (selectedItemForLessInfo != null && quantity.SelectedItem != null)
+            if (selectedItemForLessInfo != null && quantity.Text.ToString() != "")
             {
                 Boolean isChanged = false;
-                int tempQuantityTotal = Convert.ToInt32(quantity.SelectedItem);
-                for (int i = 0; i < transactionFromPC.items.Count; i++)
-                    if (transactionFromPC.items[i].barcode == selectedItemForLessInfo.barcode)
-                    {
-                        tempQuantityTotal += Convert.ToInt32(transactionFromPC.items[i].quantity);
-                        transactionFromPC.items[i] = new DataStructure.transactionItem(transactionFromPC.items[i].barcode, tempQuantityTotal.ToString(), transactionFromPC.items[i].price);
-                        isChanged = true;
-                    }
-                if (!isChanged)
-                {
-                    for (int i = 0; i < data.Count; i++)
-                        if (data[i].barcode == selectedItemForLessInfo.barcode)
-                            transactionFromPC.add(selectedItemForLessInfo.barcode, quantity.SelectedItem.ToString(), data[i].daily_price);
-                    _allItems.Clear();
-                    foreach (var i in data)
-                        _allItems.Add(i);
-                    ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
-                }
+                int tempQuantityTotal;
+                Boolean isIneter = Int32.TryParse(quantity.Text.ToString(), out tempQuantityTotal);
+                if (!isIneter)
+                    MessageBox.Show("Please type in correct number!!");
                 else
                 {
-                    _allItems.Clear();
-                    foreach (var i in data)
-                        _allItems.Add(i);
-                    ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+                    for (int j = 0; j < data.Count; j++)
+                        if (data[j].barcode == selectedItemForLessInfo.barcode)
+                            if (Convert.ToInt32(selectedItemForLessInfo.current_stock) >= Convert.ToInt32(quantity.Text.ToString()))
+                            {
+
+                                for (int i = 0; i < transactionFromPC.items.Count; i++)
+                                    if (transactionFromPC.items[i].barcode == selectedItemForLessInfo.barcode)
+                                    {
+                                        tempQuantityTotal += Convert.ToInt32(transactionFromPC.items[i].quantity);
+                                        transactionFromPC.items[i] = new DataStructure.transactionItem(transactionFromPC.items[i].barcode, tempQuantityTotal.ToString(), transactionFromPC.items[i].price);
+                                        isChanged = true;
+                                    }
+                                if (!isChanged)
+                                {
+                                    for (int i = 0; i < data.Count; i++)
+                                        if (data[i].barcode == selectedItemForLessInfo.barcode)
+                                            transactionFromPC.add(selectedItemForLessInfo.barcode, quantity.Text.ToString(), data[i].daily_price);
+                                    _allItems.Clear();
+                                    foreach (var i in data)
+                                        _allItems.Add(i);
+                                    ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+                                }
+                                else
+                                {
+                                    _allItems.Clear();
+                                    foreach (var i in data)
+                                        _allItems.Add(i);
+                                    ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+                                }
+                                for (int i = 0; i < data.Count; i++)
+                                    if (data[i].barcode == selectedItemForLessInfo.barcode)
+                                        data[i].current_stock = (Convert.ToInt32(selectedItemForLessInfo.current_stock) - Convert.ToInt32(quantity.Text.ToString())).ToString();
+                            }
+                            else
+                                MessageBox.Show("Please type in correct number..");
                 }
-                for (int i = 0; i < data.Count; i++)
-                    if (data[i].barcode == selectedItemForLessInfo.barcode)
-                        data[i].current_stock = (Convert.ToInt32(selectedItemForLessInfo.current_stock) - Convert.ToInt32(quantity.SelectedItem)).ToString();
             }
-            else
-                MessageBox.Show("Please select both item and quantity!");
             _oneTransaction.Clear();
             for (int i = 0; i < transactionFromPC.items.Count; i++)
             {
@@ -538,7 +559,7 @@ namespace wpf3002
 
         private void saveTransaction_Click(object sender, RoutedEventArgs e)
         {
-            transactionFromPC.date = DateTime.Now;
+            transactionFromPC.date = todayDate;
             _wholeDayTransaction.Add(transactionFromPC);
             transactionFromPC = new DataStructure.Transaction();
             _oneTransaction.Clear();
@@ -575,7 +596,7 @@ namespace wpf3002
         {
             for (int i = 0; i < a.Length; i++)
                 for (int j = 0; j < b.Length; j++)
-                    pricetagIDListView.Items.Add(a[i]+b[j]);
+                    pricetagIDListView.Items.Add(a[i] + b[j]);
         }
 
         private void LessInfo2SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -602,14 +623,15 @@ namespace wpf3002
                 for (int i = 0; i < pricetag.Count; i++)
                     if (pricetag[i].pricetagID == pricetagIDListView.SelectedItem.ToString())
                         pricetag.RemoveAt(i);
-                    DataStructure.PriceTag tempTag = new DataStructure.PriceTag(selectedItemForLessInfo2.name, selectedItemForLessInfo2.barcode, selectedItemForLessInfo2.daily_price, pricetagIDListView.SelectedItem.ToString());
-                    pricetag.Add(tempTag);
+                DataStructure.PriceTag tempTag = new DataStructure.PriceTag(selectedItemForLessInfo2.name, selectedItemForLessInfo2.barcode, selectedItemForLessInfo2.daily_price, pricetagIDListView.SelectedItem.ToString());
+                pricetag.Add(tempTag);
             }
             else
             {
                 MessageBox.Show("Please select both id and barcode!!");
             }
         }
+
 
         private void loadTransaction_Click(object sender, RoutedEventArgs e)
         {
@@ -626,23 +648,98 @@ namespace wpf3002
             // Get the selected file name and display in a TextBox
             if (result == true)
             {
-                // Open document
-                String filename = dlg.FileName;
-                DataStructure.Transaction tempTransaction = new DataStructure.Transaction();
-                foreach (String line in File.ReadAllLines(filename))
+                ThreadPool.QueueUserWorkItem((x) =>
+                {
+                    Dispatcher.BeginInvoke((Action)(() =>
+                    {
+
+
+
+                        String filename = dlg.FileName;
+                        DataStructure.Transaction tempTransaction = new DataStructure.Transaction();
+                        String transactionID = "";
+                        foreach (String line in File.ReadAllLines(filename))
+                        {
+                            String[] tokens = line.Split(':');
+                            String _barcode = tokens[3];
+                            String _quantity = tokens[4];
+                            String _price = "";
+
+                            String[] _dates = tokens[5].Split('/');
+                            DateTime _date = new DateTime(Convert.ToInt32(_dates[2]), Convert.ToInt32(_dates[1]), Convert.ToInt32(_dates[0]));
+                            foreach (var i in data)
+                                if (i.barcode == _barcode)
+                                {
+                                    if (_dates[0] == "30" && _dates[1] == "9")
+                                    {
+                                        _price = i.daily_price;
+                                        i.current_stock = (Convert.ToInt32(i.current_stock) - Convert.ToInt32(_quantity)).ToString();
+                                    }
+                                    else
+                                    {
+                                        _price = i.daily_price;
+                                    }
+                                }
+                            if (transactionID == tokens[0])
+                            {
+                                tempTransaction.add(_barcode, _quantity, _price);
+                                tempTransaction.date = tokens[5];
+                            }
+                            else
+                            {
+                                transactionID = tokens[0];
+                                wholeDayTransaction.Add(tempTransaction);
+                                tempTransaction = new DataStructure.Transaction();
+                                tempTransaction.add(_barcode, _quantity, _price);
+                                tempTransaction.date = tokens[5];
+                            }
+                        }
+                        wholeDayTransaction.Add(tempTransaction);
+                    }));
+                });
+            }
+            _allItems.Clear();
+            foreach (var i in data)
+                _allItems.Add(i);
+            MessageBox.Show("Loading Transaction Successfully!!");
+        }
+
+        private async void Sync_Click(object sender, RoutedEventArgs e)
+        {
+            data.Clear();
+            _allItems.Clear();
+            await initial();
+            MessageBox.Show("Sync complete!!");
+        }
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            List<DataStructure.ExportItem> allExportItem = new List<DataStructure.ExportItem>();
+            foreach (var i in _wholeDayTransaction)
+            {
+                if (i.date == todayDate)
                 {
 
-                    String[] tokens = line.Split(':');
-                    String _barcode = tokens[0];
-                    String _quantity = tokens[1];
-                    String _price = tokens[2];
-                    String[] _dates = tokens[3].Split('/');
-                    DateTime _date = new DateTime(Convert.ToInt32(_dates[2]), Convert.ToInt32(_dates[1]), Convert.ToInt32(_dates[0]));
-                    tempTransaction.add(_barcode, _quantity, _price);
-                    tempTransaction.date = _date;
+                    foreach (var k in i.items)
+                    {
+                        Boolean isBarcodeExist = false;
+                        foreach (var j in allExportItem)
+                            if (j.barcode == k.barcode)
+                            {
+                                isBarcodeExist = true;
+                                j.quantity = (Convert.ToInt32(k.quantity) + Convert.ToInt32(j.quantity)).ToString();
+                            }
+                        if (!isBarcodeExist)
+                            allExportItem.Add(new DataStructure.ExportItem(k.barcode, k.quantity, k.price, todayDate));
+                    }
                 }
-                wholeDayTransaction.Add(tempTransaction);
             }
+            String filename = "data" + todayDateForFileName + ".txt";
+            TextWriter tw = new StreamWriter(filename);
+            foreach (var i in allExportItem)
+                tw.WriteLine(i.barcode + ":" + i.quantity + ":" + i.price + ":" + i.date);
+            tw.Close();
+            MessageBox.Show("Export File Successful!!!");
         }
 
     }

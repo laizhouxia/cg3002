@@ -15,7 +15,7 @@ namespace wpf3002.DataStructure
             totalPrice = 0;
         }
         public List<transactionItem> items { get; set; }
-        public DateTime date { get; set; }
+        public String date { get; set; }
         public Int32 totalQuantity { get; set; }
         public Double totalPrice { get; set; }
         public void add(String barcode,String quantity,String price)
