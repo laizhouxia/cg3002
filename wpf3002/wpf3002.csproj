@@ -91,7 +91,6 @@
     <Compile Include="DataStructure\AllTransaction.cs" />
     <Compile Include="DataStructure\ExportItem.cs" />
     <Compile Include="DataStructure\Item.cs" />
-    <Compile Include="DataStructure\PriceList.cs" />
     <Compile Include="DataStructure\PriceTag.cs" />
     <Compile Include="DataStructure\Transaction.cs" />
     <Compile Include="DataStructure\transactionItem.cs" />

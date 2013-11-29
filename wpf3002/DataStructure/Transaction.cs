@@ -14,6 +14,8 @@ namespace wpf3002.DataStructure
             totalQuantity = 0;
             totalPrice = 0;
         }
+        public String id { get; set; }
+        public String casherID { get; set; }
         public List<transactionItem> items { get; set; }
         public String date { get; set; }
         public Int32 totalQuantity { get; set; }

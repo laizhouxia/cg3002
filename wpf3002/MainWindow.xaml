@@ -76,10 +76,12 @@
                     <TextBox Name="category" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,368,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
                     <TextBlock HorizontalAlignment="Left" Margin="27,428,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top" Height="30" Width="86"/>
                     <TextBox Name="manufacturer" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,424,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-                    <TextBox Name="testTextBox" IsEnabled="False" HorizontalAlignment="Left" Height="116" Margin="28,511,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="284"/>
+                    <TextBox Name="testTextBox" IsEnabled="False" HorizontalAlignment="Left" Height="95" Margin="28,511,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="284"/>
                     <TextBox Name="barcodeSearch" HorizontalAlignment="Left" Height="23" Margin="1084,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="195" KeyDown="BarcodeSearch_KeyDown"/>
                     <TextBlock HorizontalAlignment="Left" Margin="1028,22,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top"/>
                     <Button Content="Sync" HorizontalAlignment="Left" Margin="347,18,0,0" VerticalAlignment="Top" Width="76" Click="Sync_Click"/>
+                    <TextBox x:Name="testTextBoxInput" HorizontalAlignment="Left" Height="23" Margin="28,483,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <Button x:Name="Test_BBBButton" Content="Click" HorizontalAlignment="Left" Margin="28,620,0,0" VerticalAlignment="Top" Width="75" Click="testBBBButton_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Create Transaction">
@@ -143,6 +145,8 @@
                     <Button Content="Load" HorizontalAlignment="Left" Margin="1105,81,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="loadTransaction_Click"/>
                     <TextBlock HorizontalAlignment="Left" Margin="606,331,0,0" TextWrapping="Wrap" Text="Quantity" VerticalAlignment="Top"/>
                     <TextBox Name="quantity" HorizontalAlignment="Left" Height="22" Margin="578,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="106"/>
+                    <TextBox Name="totalPriceTextBox" HorizontalAlignment="Left" Height="22" Margin="1158,603,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="1071,607,0,0" TextWrapping="Wrap" Text="TotalPrice" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="View Transaction">
@@ -150,6 +154,11 @@
                     <ListView Name="ListViewAllTransaction" IsSynchronizedWithCurrentItem="True"  ItemsSource="{Binding Path=wholeDayTransaction}" HorizontalAlignment="Left" Height="585" Margin="50,49,0,0" VerticalAlignment="Top" Width="310" SelectionChanged="AllTransactionSelectionChanged" >
                         <ListView.View>
                             <GridView>
+                                <GridViewColumn DisplayMemberBinding="{Binding id}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Tag="name">ID</GridViewColumnHeader>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
                                 <GridViewColumn DisplayMemberBinding="{Binding date}">
                                     <GridViewColumn.Header>
                                         <GridViewColumnHeader Tag="name">Date</GridViewColumnHeader>
@@ -193,6 +202,8 @@
                         </ListView.View>
                     </ListView>
                     <Button Content="Export" HorizontalAlignment="Left" Margin="1192,14,0,0" VerticalAlignment="Top" Width="76" Click="Export_Click"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="972,17,0,0" TextWrapping="Wrap" Text="TotalPrice" VerticalAlignment="Top" RenderTransformOrigin="-0.064,-0.1"/>
+                    <TextBox Name="TotalPriceTextBox2" HorizontalAlignment="Left" Height="24" Margin="1041,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Manage PriceTag">

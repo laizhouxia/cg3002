@@ -43,6 +43,13 @@ namespace wpf3002
         private async Task initial()
         {
             String response = await Functions.RequestSender.GetPriceListAsync();
+            //testTextBox.Text += response;
+            //testTextBox.Text += System.Guid.NewGuid().ToString() + "\r\n";
+            //testTextBox.Text += System.Guid.NewGuid().ToString("N") + "\r\n";
+            //testTextBox.Text += System.Guid.NewGuid().ToString("D") + "\r\n";
+            //testTextBox.Text += System.Guid.NewGuid().ToString("B") + "\r\n";
+            //testTextBox.Text += System.Guid.NewGuid().ToString("P") + "\r\n";
+
             if (response != null)
             {
                 data = (ObservableCollection<DataStructure.Item>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Item>>(response);
@@ -57,6 +64,8 @@ namespace wpf3002
             {
                 //textBoxUI.Text += "response is empty";
             }
+
+            
         }
 
         ObservableCollection<DataStructure.Item> data;
@@ -109,6 +118,7 @@ namespace wpf3002
                 }
             }
         }
+
         ObservableCollection<DataStructure.TransactionViewItem> _oneTransactionView = new ObservableCollection<DataStructure.TransactionViewItem>();
         public ObservableCollection<DataStructure.TransactionViewItem> oneTransactionView
         {
@@ -124,6 +134,7 @@ namespace wpf3002
                 }
             }
         }
+
         ObservableCollection<DataStructure.PriceTag> _pricetag = new ObservableCollection<DataStructure.PriceTag>();
         public ObservableCollection<DataStructure.PriceTag> pricetag
         {
@@ -230,18 +241,10 @@ namespace wpf3002
             await initial();
             MessageBox.Show("Sync complete!!");
             initialPriceTagId();
-            //ThreadPool.QueueUserWorkItem((x) =>
-            //{
-            //    //while (true)
-            //    //{
-            //    //    Dispatcher.BeginInvoke((Action)(() =>
-            //    //    {
-
-            //    //    }));
-            //    //    Thread.Sleep(500);
-            //    //}
-            //    initialSerialPort();
-            //});
+            port.Open();
+            //Thread readThread = new Thread(ReadRead);
+            //readThread.Start();
+            port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
         }
 
         private void priceListSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -264,8 +267,6 @@ namespace wpf3002
             }
         }
 
-
-
         private void setAllTextBox(DataStructure.Item item)
         {
             name.Text = item.name;
@@ -277,7 +278,6 @@ namespace wpf3002
             category.Text = item.category;
             manufacturer.Text = item.manufacturer;
         }
-
 
         private DataStructure.Item readItem()
         {
@@ -292,13 +292,53 @@ namespace wpf3002
             return false;
         }
 
-
         static bool _continue;
         static SerialPort _serialPort;
         DataStructure.Transaction transaction = new DataStructure.Transaction();
 
         String oneItemBarcode = null;
         String oneItemPrice = null;
+        SerialPort port = new SerialPort("COM4", 9600, Parity.None, 8, StopBits.Two);
+
+        private void testBBBButton_Click(object sender, RoutedEventArgs e)
+        {
+            port.Write(testTextBoxInput.Text);
+        }
+        string message;
+        private void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            // Show all the incoming data in the port's buffer
+            bool isRead = true;
+            while(isRead)
+            {
+                try
+                {
+                    message += port.ReadExisting();
+                    if (message != null)
+                    {
+                        MessageBox.Show(message);
+                        isRead = false;
+                    }
+                }
+                catch (TimeoutException) { }
+            }
+        }
+
+        public void ReadRead()
+        {
+            while (true)
+            {
+                try
+                {
+                    string message = port.ReadLine();
+                    if (message != null)
+                    {
+                        MessageBox.Show(message);
+                    }
+                }
+                catch (TimeoutException) { }
+            }
+        }
 
         public void initialSerialPort()
         {
@@ -306,20 +346,20 @@ namespace wpf3002
             Thread readThread = new Thread(Read);
 
             // Create a new SerialPort object with default settings.
-            _serialPort = new SerialPort("COM3");
+            _serialPort = new SerialPort("COM4");
 
             // Allow the user to set the appropriate properties.
             _serialPort.BaudRate = 9600;
             _serialPort.Parity = Parity.None;
             _serialPort.StopBits = StopBits.Two;
             _serialPort.DataBits = 8;
-            _serialPort.Encoding = Encoding.ASCII;
+            _serialPort.Encoding = Encoding.Unicode;
             _serialPort.ReadBufferSize = 128;
             _serialPort.Handshake = Handshake.None;
 
             // Set the read/write timeouts
-            _serialPort.ReadTimeout = 500;
-            _serialPort.WriteTimeout = 500;
+            _serialPort.ReadTimeout = 50;
+            _serialPort.WriteTimeout = 50;
 
             _serialPort.Open();
             //testTextBox.Text += "open serial port successful! \r\n";
@@ -339,9 +379,9 @@ namespace wpf3002
                         }
                 }
                 else if (oneItemBarcode == null)
-                    _serialPort.WriteLine("I1B");
+                    _serialPort.WriteLine("I1AB");
                 else
-                    _serialPort.WriteLine("I1Q");
+                    _serialPort.WriteLine("I1AQ");
 
             }
 
@@ -512,6 +552,7 @@ namespace wpf3002
             {
                 _oneTransaction.Add(transactionFromPC.items[i]);
             }
+            syscTotalPrice();
         }
         DataStructure.transactionItem selectedItemForTransaction;
         private void TransactionSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -551,6 +592,7 @@ namespace wpf3002
             foreach (var i in data)
                 _allItems.Add(i);
             ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+            syscTotalPrice();
         }
 
         private void cancelTransaction_Click(object sender, RoutedEventArgs e)
@@ -565,11 +607,13 @@ namespace wpf3002
             foreach (var i in data)
                 _allItems.Add(i);
             ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
+            syscTotalPrice();
         }
 
         private void saveTransaction_Click(object sender, RoutedEventArgs e)
         {
             transactionFromPC.date = todayDate;
+            transactionFromPC.id = System.Guid.NewGuid().ToString("N");
             _wholeDayTransaction.Add(transactionFromPC);
             transactionFromPC = new DataStructure.Transaction();
             _oneTransaction.Clear();
@@ -577,6 +621,15 @@ namespace wpf3002
             {
                 _oneTransaction.Add(transactionFromPC.items[i]);
             }
+            syscTotalPrice();
+        }
+
+        private void syncOneTransactionView()
+        {
+            double totalPrice = 0;
+            foreach (var i in _oneTransactionView)
+                totalPrice += Convert.ToDouble(i.price) * Convert.ToDouble(i.quantity);
+            TotalPriceTextBox2.Text = totalPrice.ToString();
         }
 
         private void AllTransactionSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -602,6 +655,7 @@ namespace wpf3002
                             break;
                         }
             }
+            syncOneTransactionView();
         }
         string[] a = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
         string[] b = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
@@ -644,7 +698,14 @@ namespace wpf3002
                 MessageBox.Show("Please select both id and barcode!!");
             }
         }
-
+        
+        private void syscTotalPrice()
+        {
+            double totalPrice = 0;
+            foreach (var i in _oneTransaction)
+                totalPrice += Convert.ToDouble(i.price) * Convert.ToDouble(i.quantity);
+            totalPriceTextBox.Text = totalPrice.ToString();
+        }
 
         private void loadTransaction_Click(object sender, RoutedEventArgs e)
         {
@@ -665,9 +726,6 @@ namespace wpf3002
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-
-
-
                         String filename = dlg.FileName;
                         DataStructure.Transaction tempTransaction = new DataStructure.Transaction();
                         String transactionID = "";
@@ -693,20 +751,23 @@ namespace wpf3002
                                         _price = i.daily_price;
                                     }
                                 }
-                            if (transactionID == tokens[0])
+                            if (transactionID == tokens[0] || transactionID == "")
                             {
                                 tempTransaction.add(_barcode, _quantity, _price);
                                 tempTransaction.date = tokens[5];
+                                transactionID = tokens[0];
                             }
                             else
                             {
-                                transactionID = tokens[0];
+                                tempTransaction.id = transactionID;
                                 wholeDayTransaction.Add(tempTransaction);
+                                transactionID = tokens[0];
                                 tempTransaction = new DataStructure.Transaction();
                                 tempTransaction.add(_barcode, _quantity, _price);
                                 tempTransaction.date = tokens[5];
                             }
                         }
+                        tempTransaction.id = transactionID;
                         wholeDayTransaction.Add(tempTransaction);
                     }));
                 });
@@ -767,6 +828,26 @@ namespace wpf3002
             }
 
         }
+
+        private void syncfile()
+        {
+            String filename = "transactions.txt";
+            // Show save file dialog box
+            StreamWriter sw = new StreamWriter(filename);
+            foreach (var i in _wholeDayTransaction)
+                foreach (var j in i.items)
+                    sw.WriteLine(i.id + ":" + i.casherID + ":" + j.barcode + ": " + ":" + j.quantity + ":" + i.date);
+            sw.Close();
+
+            filename = "items.txt";
+            // Show save file dialog box
+            sw = new StreamWriter(filename);
+            foreach (var i in _allItems)
+                sw.WriteLine(i.barcode + ":" + i.name + ":" + i.daily_price + ":" + i.current_stock + ":" + i.minimum_stock + ":" + i.bundle_unit + ":" + i.category + ":" + i.manufacturer);
+            sw.Close();
+        }
+
+
 
     }
 }
