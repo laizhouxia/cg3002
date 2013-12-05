@@ -304,41 +304,62 @@ namespace wpf3002
         {
             port.Write(testTextBoxInput.Text);
         }
-        string message;
+        String message = "";
+        DataStructure.Transaction realtimeTranslantion = new DataStructure.Transaction();
+        String realtimeBarcode = "";
+        String realtimeQuantity = "";
+        String realtimePrice = "";
         private void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // Show all the incoming data in the port's buffer
             bool isRead = true;
-            while(isRead)
+            while (isRead)
             {
                 try
                 {
-                    message += port.ReadExisting();
-                    if (message != null)
-                    {
-                        MessageBox.Show(message);
-                        isRead = false;
-                    }
+                    String tempmessage = port.ReadExisting();
+                    if (tempmessage == null)
+                        break;
+                    if (tempmessage[0] == 'O')
+                        message = tempmessage;
+                    else
+                        message += tempmessage;
                 }
                 catch (TimeoutException) { }
+            }
+            if (message.Length > 3)
+            {
+                String id = "" + message[1] + message[2];
+                if (realtimeTranslantion.casherID == id)
+                {
+                    if (message[3] == 'T')
+                    {
+                        _wholeDayTransaction.Add(realtimeTranslantion);
+                        realtimeTranslantion = new DataStructure.Transaction();
+                    }
+                }
+                else
+                {
+                    realtimeTranslantion.casherID = id;
+                    realtimeTranslantion.date = todayDate;
+                }
+                if (message[3] == 'B')
+                {
+                    realtimeBarcode = message.Substring(4, 8);
+                    foreach (var i in _allItems)
+                        if (i.barcode == realtimeBarcode)
+                            realtimePrice = i.daily_price;
+                    port.Write("I"+id+realtimePrice);
+                }
+                else if (message[3] == 'Q')
+                {
+                    realtimeQuantity = message.Substring(4, 6);
+                    if (realtimePrice != "" && realtimeBarcode != "")
+                        realtimeTranslantion.items.Add(new DataStructure.transactionItem(realtimeBarcode, realtimeQuantity, realtimePrice));
+                }
             }
         }
 
-        public void ReadRead()
-        {
-            while (true)
-            {
-                try
-                {
-                    string message = port.ReadLine();
-                    if (message != null)
-                    {
-                        MessageBox.Show(message);
-                    }
-                }
-                catch (TimeoutException) { }
-            }
-        }
 
         public void initialSerialPort()
         {
