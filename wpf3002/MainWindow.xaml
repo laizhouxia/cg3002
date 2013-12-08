@@ -4,10 +4,13 @@
         Title="MainWindow" Height="768" Width="1366"
         Loaded="Window_Loaded">
     <Grid>
-        <TabControl HorizontalAlignment="Left" Height="690" Margin="20,20,0,0" VerticalAlignment="Top" Width="1320">
+        <TabControl HorizontalAlignment="Left" Height="658" Margin="20,20,0,0" VerticalAlignment="Top" Width="1320">
             <TabItem Header="View All Products">
-                <Grid Background="#FFF9F9F9">
-                    <ListView Name="ListViewPriceList" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="347,52,0,0" VerticalAlignment="Top" Width="943" SelectionChanged="priceListSelectionChanged">
+                <Grid Background="#FFF9F9F9" Margin="0,0,0.4,6.6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ListView Name="ListViewPriceList" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="554" Margin="347,52,0,0" VerticalAlignment="Top" Width="943" SelectionChanged="priceListSelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding name}">
@@ -76,17 +79,19 @@
                     <TextBox Name="category" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,368,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
                     <TextBlock HorizontalAlignment="Left" Margin="27,428,0,0" TextWrapping="Wrap" Text="Manufacturer" VerticalAlignment="Top" Height="30" Width="86"/>
                     <TextBox Name="manufacturer" IsEnabled="False" HorizontalAlignment="Left" Height="30" Margin="128,424,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-                    <TextBox Name="testTextBox" IsEnabled="False" HorizontalAlignment="Left" Height="95" Margin="28,511,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="284"/>
+                    <TextBox Name="testTextBox" HorizontalAlignment="Left" Height="129" Margin="27,477,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="284"/>
                     <TextBox Name="barcodeSearch" HorizontalAlignment="Left" Height="23" Margin="1084,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="195" KeyDown="BarcodeSearch_KeyDown"/>
                     <TextBlock HorizontalAlignment="Left" Margin="1028,22,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top"/>
                     <Button Content="Sync" HorizontalAlignment="Left" Margin="347,18,0,0" VerticalAlignment="Top" Width="76" Click="Sync_Click"/>
-                    <TextBox x:Name="testTextBoxInput" HorizontalAlignment="Left" Height="23" Margin="28,483,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                    <Button x:Name="Test_BBBButton" Content="Click" HorizontalAlignment="Left" Margin="28,620,0,0" VerticalAlignment="Top" Width="75" Click="testBBBButton_Click"/>
+                    <Button x:Name="LoadTransaction_Item" Content="Load" HorizontalAlignment="Left" Margin="448,17,0,0" VerticalAlignment="Top" Width="75" Click="LoadTransaction_Item_Click"/>
+                    <Button x:Name="UploadFile" Content="UploadFile" HorizontalAlignment="Left" Margin="548,17,0,0" VerticalAlignment="Top" Width="75" Click="UploadFile_Click"/>
+                    <TextBox x:Name="StoreNum" HorizontalAlignment="Left" Height="23" Margin="736,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="28"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="656,19,0,0" TextWrapping="Wrap" Text="Store Number" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Create Transaction">
                 <Grid Background="#FFF9F9F9">
-                    <ListView Name="ListViewLessInfo" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="LessInfoSelectionChanged">
+                    <ListView Name="ListViewLessInfo" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="561" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="LessInfoSelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding name}">
@@ -118,7 +123,7 @@
                     <TextBox Name="barcodeSearchTransaction" HorizontalAlignment="Left" Height="24" Margin="307,18,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="195" KeyDown="BarcodeSearchTransaction_KeyDown"/>
                     <TextBlock HorizontalAlignment="Left" Margin="251,22,0,0" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top"/>
                     <Button Content="&gt;" Name="addTransaction" HorizontalAlignment="Left" FontSize="50" Margin="736,316,0,0" VerticalAlignment="Top" Width="76" Height="80" Click="addTransaction_Click"/>
-                    <ListView Name="ListViewTransaction" ItemsSource="{Binding Path=oneTransaction}" HorizontalAlignment="Left" Height="588" Margin="846,59,0,0" VerticalAlignment="Top" Width="198" SelectionChanged="TransactionSelectionChanged">
+                    <ListView Name="ListViewTransaction" ItemsSource="{Binding Path=oneTransaction}" HorizontalAlignment="Left" Height="561" Margin="846,59,0,0" VerticalAlignment="Top" Width="198" SelectionChanged="TransactionSelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding barcode}">
@@ -145,13 +150,13 @@
                     <Button Content="Load" HorizontalAlignment="Left" Margin="1105,81,0,0" VerticalAlignment="Top" Width="122" Height="64" Click="loadTransaction_Click"/>
                     <TextBlock HorizontalAlignment="Left" Margin="606,331,0,0" TextWrapping="Wrap" Text="Quantity" VerticalAlignment="Top"/>
                     <TextBox Name="quantity" HorizontalAlignment="Left" Height="22" Margin="578,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="106"/>
-                    <TextBox Name="totalPriceTextBox" HorizontalAlignment="Left" Height="22" Margin="1158,603,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="1071,607,0,0" TextWrapping="Wrap" Text="TotalPrice" VerticalAlignment="Top"/>
+                    <TextBox Name="totalPriceTextBox" HorizontalAlignment="Left" Height="22" Margin="1168,586,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="1081,590,0,0" TextWrapping="Wrap" Text="TotalPrice" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="View Transaction">
                 <Grid Background="#FFF9F9F9">
-                    <ListView Name="ListViewAllTransaction" IsSynchronizedWithCurrentItem="True"  ItemsSource="{Binding Path=wholeDayTransaction}" HorizontalAlignment="Left" Height="585" Margin="50,49,0,0" VerticalAlignment="Top" Width="310" SelectionChanged="AllTransactionSelectionChanged" >
+                    <ListView Name="ListViewAllTransaction" IsSynchronizedWithCurrentItem="True"  ItemsSource="{Binding Path=wholeDayTransaction}" HorizontalAlignment="Left" Height="571" Margin="50,49,0,0" VerticalAlignment="Top" Width="310" SelectionChanged="AllTransactionSelectionChanged" >
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding id}">
@@ -172,7 +177,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView Name="ListViewTransactionView" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=oneTransactionView}" HorizontalAlignment="Left" Height="585" Margin="400,49,0,0" VerticalAlignment="Top" Width="874">
+                    <ListView Name="ListViewTransactionView" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=oneTransactionView}" HorizontalAlignment="Left" Height="571" Margin="400,49,0,0" VerticalAlignment="Top" Width="874">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding name}">
@@ -201,14 +206,13 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <Button Content="Export" HorizontalAlignment="Left" Margin="1192,14,0,0" VerticalAlignment="Top" Width="76" Click="Export_Click"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="972,17,0,0" TextWrapping="Wrap" Text="TotalPrice" VerticalAlignment="Top" RenderTransformOrigin="-0.064,-0.1"/>
-                    <TextBox Name="TotalPriceTextBox2" HorizontalAlignment="Left" Height="24" Margin="1041,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="1079,17,0,0" TextWrapping="Wrap" Text="TotalPrice" VerticalAlignment="Top" RenderTransformOrigin="-0.064,-0.1"/>
+                    <TextBox Name="TotalPriceTextBox2" HorizontalAlignment="Left" Height="24" Margin="1148,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Manage PriceTag">
                 <Grid Background="#FFF9F9F9">
-                    <ListView Name="ListViewLessInfo2" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="588" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="LessInfo2SelectionChanged">
+                    <ListView Name="ListViewLessInfo2" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Path=allItems}" HorizontalAlignment="Left" Height="561" Margin="26,59,0,0" VerticalAlignment="Top" Width="515" SelectionChanged="LessInfo2SelectionChanged">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding name}">
@@ -237,16 +241,16 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <ListView Name="pricetagIDListView" HorizontalAlignment="Left" Height="588" Margin="622,64,0,0" VerticalAlignment="Top" Width="86">
+                    <ListView Name="pricetagIDListView" HorizontalAlignment="Left" Height="556" Margin="622,64,0,0" VerticalAlignment="Top" Width="86">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="PriceTagID"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <TextBlock HorizontalAlignment="Left" Margin="559,324,0,0" FontSize="50" TextWrapping="Wrap" Text="&amp;" VerticalAlignment="Top" Height="72" Width="45"/>
-                    <Button Content="&gt;" Name="addPriceTag" HorizontalAlignment="Left" FontSize="50" Margin="736,316,0,0" VerticalAlignment="Top" Width="76" Height="80" Click="addPriceTag_Click" />
-                    <ListView Name="pricetagListView" ItemsSource="{Binding Path=pricetag}" HorizontalAlignment="Left" Height="588" Margin="846,59,0,0" VerticalAlignment="Top" Width="443">
+                    <TextBlock HorizontalAlignment="Left" Margin="559,306,0,0" FontSize="50" TextWrapping="Wrap" Text="&amp;" VerticalAlignment="Top" Height="72" Width="45"/>
+                    <Button Content="&gt;" Name="addPriceTag" HorizontalAlignment="Left" FontSize="50" Margin="736,298,0,0" VerticalAlignment="Top" Width="76" Height="80" Click="addPriceTag_Click" />
+                    <ListView Name="pricetagListView" ItemsSource="{Binding Path=pricetag}" HorizontalAlignment="Left" Height="561" Margin="846,59,0,0" VerticalAlignment="Top" Width="443">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn DisplayMemberBinding="{Binding name}">
@@ -275,5 +279,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        <TextBlock x:Name="progressText" HorizontalAlignment="Left"  FontSize="20" Margin="20,683,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="30" Width="1145"/>
+        <Button x:Name="SyncDevices" Content="Sync Devices" HorizontalAlignment="Left" Margin="1192,683,0,0" VerticalAlignment="Top" Width="123" Height="31" Click="SyncDevices_Click"/>
     </Grid>
 </Window>

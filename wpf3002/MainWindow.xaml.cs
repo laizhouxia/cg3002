@@ -34,6 +34,7 @@ namespace wpf3002
     {
         String todayDate = "30/9/2013";
         String todayDateForFileName = "30_9_2013";
+        String todayDateForUserUpload = "2013-9-30";
         public MainWindow()
         {
             this.DataContext = this;
@@ -42,30 +43,53 @@ namespace wpf3002
 
         private async Task initial()
         {
-            String response = await Functions.RequestSender.GetPriceListAsync();
-            //testTextBox.Text += response;
-            //testTextBox.Text += System.Guid.NewGuid().ToString() + "\r\n";
-            //testTextBox.Text += System.Guid.NewGuid().ToString("N") + "\r\n";
-            //testTextBox.Text += System.Guid.NewGuid().ToString("D") + "\r\n";
-            //testTextBox.Text += System.Guid.NewGuid().ToString("B") + "\r\n";
-            //testTextBox.Text += System.Guid.NewGuid().ToString("P") + "\r\n";
+            String response = "";
+            progressText.Text = "Downloading data...";
+            data = new ObservableCollection<DataStructure.Item>();
+            String storeID = StoreNum.Text;
+            for (int j = 1; j < 11; j++)
+            {
+                progressText.Text = "Downloading page "+j;
+                response = await Functions.RequestSender.GetPriceListAsync("http://cg3002.herokuapp.com/api/" + storeID + "/price_list_paged.json?page=" + j);
+                //testTextBox.Text += response;a          
+                //testTextBox.Text += System.Guid.NewGuid().ToString() + "\r\n";
+                //testTextBox.Text += System.Guid.NewGuid().ToString("N") + "\r\n";
+                //testTextBox.Text += System.Guid.NewGuid().ToString("D") + "\r\n";
+                //testTextBox.Text += System.Guid.NewGuid().ToString("B") + "\r\n";
+                //testTextBox.Text += System.Guid.NewGuid().ToString("P") + "\r\n";
+                 
+                if (response != null)
+                {
+                    ObservableCollection<DataStructure.Item> tempData = (ObservableCollection<DataStructure.Item>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Item>>(response);
+                    for (int i = 0; i < tempData.Count; i++)
+                    {
+                        //textBoxUI.Text += temp[i].barcode + "\r\n";
+                        data.Add(tempData[i]);
+                    }
+                    for (int i = 0; i < tempData.Count; i++)
+                    {
+                        //textBoxUI.Text += temp[i].barcode + "\r\n";
+                        _allItems.Add(tempData[i]);
+                    }
+                    //textBoxUI.Text += "finish";
+                }
+                else
+                {
+                    //textBoxUI.Text += "response is empty";
+                }
+            }
 
+            response = await Functions.RequestSender.GetPriceListAsync("http://cg3002.herokuapp.com/api/members.json");
             if (response != null)
             {
-                data = (ObservableCollection<DataStructure.Item>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Item>>(response);
-                for (int i = 0; i < data.Count; i++)
-                {
-                    //textBoxUI.Text += temp[i].barcode + "\r\n";
-                    _allItems.Add(data[i]);
-                }
-                //textBoxUI.Text += "finish";
+                _member = (ObservableCollection<DataStructure.Member>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Member>>(response);
+                foreach (var i in _member)
+                    i.credits = 0.0;
             }
             else
             {
                 //textBoxUI.Text += "response is empty";
             }
-
-            
         }
 
         ObservableCollection<DataStructure.Item> data;
@@ -99,6 +123,21 @@ namespace wpf3002
                 if (value != this._wholeDayTransaction)
                 {
                     this._wholeDayTransaction = value;
+                }
+            }
+        }
+        ObservableCollection<DataStructure.Member> _member = new ObservableCollection<DataStructure.Member>();
+        public ObservableCollection<DataStructure.Member> member
+        {
+            get
+            {
+                return this._member;
+            }
+            set
+            {
+                if (value != this._member)
+                {
+                    this._member = value;
                 }
             }
         }
@@ -236,15 +275,98 @@ namespace wpf3002
             }
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await initial();
-            MessageBox.Show("Sync complete!!");
             initialPriceTagId();
-            port.Open();
-            //Thread readThread = new Thread(ReadRead);
-            //readThread.Start();
-            port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
+            portInit();
+        }
+
+        List<String> workingDevices = new List<string>();
+
+        private async void portSend()
+        {
+
+            try
+            {
+                while (true)
+                {
+                    foreach (var i in workingDevices)
+                    {
+                        port.Write("I" + i);
+                    }
+                    await Task.Delay(3000);
+                }
+            }
+            catch
+            {
+                Dispatcher.Invoke((Action)delegate() { progressText.Text = "Send failed.."; });
+            }
+        }
+
+        private async void SyncDevices_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var i in _pricetag)
+            {
+                String name = i.name;
+                String price = i.price;
+                if (name.Length < 17)
+                {
+                    int temp = name.Length;
+                    for (int j = 0; j < 16 - temp; j++)
+                        name += " ";
+                    name += "*";
+                }
+                if (name.Length < 40)
+                {
+                    int temp = name.Length;
+                    for (int j = 0; j < 40 - temp; j++)
+                        name += " ";
+                    temp = price.Length;
+                    for (int j = 0; j < 40 - temp; j++)
+                        price += " ";
+                }
+                else
+                {
+                    
+                    if (name.Length > 72)
+                        name = name.Substring(0,72);
+                    int temp = price.Length + name.Length;
+                    for (int j = 0; j < 80 - temp; j++)
+                        price += " ";
+                }
+                await Task.Delay(30);
+                port.Write(i.pricetagID + name + price);
+                progressText.Text = "Trying to send " + i.pricetagID + " " + name;
+            }
+            for(int i=0;i<c.Length;i++)
+                for (int j = 0; j < b.Length; j++)
+                {
+                    await Task.Delay(30);
+                    String tempID = c[i] + b[j];
+                    if (!workingDevices.Contains(tempID))
+                    {
+                        port.Write("I" + tempID);
+                        progressText.Text = "Trying to connect " + tempID;
+                    }
+                }
+            progressText.Text = "Sync devices successful.. " + workingDevices.Count + " devices are working..";
+        }
+        
+        private void portInit()
+        {
+            try
+            {
+                port.Open();
+                port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
+                progressText.Text = "Connect port successful..";
+            }
+            catch
+            {
+                Dispatcher.Invoke((Action)delegate() { progressText.Text = "Unable to connect port.."; });
+                Dispatcher.Invoke((Action)delegate() { SyncDevices.IsEnabled = false; });
+            }
+            Thread oThread = new Thread(new ThreadStart(portSend));
+            oThread.Start();
         }
 
         private void priceListSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -292,23 +414,13 @@ namespace wpf3002
             return false;
         }
 
-        static bool _continue;
-        static SerialPort _serialPort;
         DataStructure.Transaction transaction = new DataStructure.Transaction();
+        SerialPort port = new SerialPort("COM6", 9600, Parity.None, 8, StopBits.Two);
 
-        String oneItemBarcode = null;
-        String oneItemPrice = null;
-        SerialPort port = new SerialPort("COM4", 9600, Parity.None, 8, StopBits.Two);
-
-        private void testBBBButton_Click(object sender, RoutedEventArgs e)
-        {
-            port.Write(testTextBoxInput.Text);
-        }
         String message = "";
-        DataStructure.Transaction realtimeTranslantion = new DataStructure.Transaction();
-        String realtimeBarcode = "";
-        String realtimeQuantity = "";
-        String realtimePrice = "";
+        Dictionary<String,DataStructure.Transaction> realtimeTranslantion = new Dictionary<string,DataStructure.Transaction>();
+        Dictionary<String, List<String>> realtimeString = new Dictionary<string, List<string>>();
+
         private void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // Show all the incoming data in the port's buffer
@@ -318,131 +430,89 @@ namespace wpf3002
                 try
                 {
                     String tempmessage = port.ReadExisting();
-                    if (tempmessage == null)
+                    if (tempmessage == null || tempmessage.Length == 0)
                         break;
                     if (tempmessage[0] == 'O')
                         message = tempmessage;
                     else
                         message += tempmessage;
+                    //if(message!="O1AN")
+                        Dispatcher.Invoke((Action)delegate() { testTextBox.Text += message + "\r\n"; });
                 }
-                catch (TimeoutException) { }
+                catch (TimeoutException) {}
             }
             if (message.Length > 3)
             {
                 String id = "" + message[1] + message[2];
-                if (realtimeTranslantion.casherID == id)
+                if (!workingDevices.Contains(id))
+                    workingDevices.Add(id);
+                if (realtimeTranslantion.ContainsKey(id))
                 {
-                    if (message[3] == 'T')
+                    if (message[3] == 'E')
                     {
-                        _wholeDayTransaction.Add(realtimeTranslantion);
-                        realtimeTranslantion = new DataStructure.Transaction();
+                        Dispatcher.Invoke((Action)delegate() { _wholeDayTransaction.Add(realtimeTranslantion[id]); });
+                        Dispatcher.Invoke((Action)delegate() { syncfile(); });
+                        realtimeTranslantion[id] = new DataStructure.Transaction();
+                        realtimeTranslantion[id].casherID = id;
+                        realtimeTranslantion[id].date = todayDate;
+                        realtimeTranslantion[id].id = System.Guid.NewGuid().ToString("N");
                     }
                 }
                 else
                 {
-                    realtimeTranslantion.casherID = id;
-                    realtimeTranslantion.date = todayDate;
+                    realtimeTranslantion.Add(id, new DataStructure.Transaction());
+                    realtimeTranslantion[id].casherID = id;
+                    realtimeTranslantion[id].date = todayDate;
+                    realtimeTranslantion[id].id = System.Guid.NewGuid().ToString("N");
                 }
-                if (message[3] == 'B')
+                if (!realtimeString.ContainsKey(id))
                 {
-                    realtimeBarcode = message.Substring(4, 8);
+                    realtimeString.Add(id, new List<string>());
+                    realtimeString[id].Add("");
+                    realtimeString[id].Add("");
+                    realtimeString[id].Add("");
+                }
+                if (message[3] == 'B' && message.Length == 12)
+                {
+                    String realtimeBarcode = message.Substring(4, 8);
+                    String realtimePrice = "";
+                    bool isFind = false;
                     foreach (var i in _allItems)
                         if (i.barcode == realtimeBarcode)
+                        {
                             realtimePrice = i.daily_price;
-                    port.Write("I"+id+realtimePrice);
-                }
-                else if (message[3] == 'Q')
-                {
-                    realtimeQuantity = message.Substring(4, 6);
-                    if (realtimePrice != "" && realtimeBarcode != "")
-                        realtimeTranslantion.items.Add(new DataStructure.transactionItem(realtimeBarcode, realtimeQuantity, realtimePrice));
-                }
-            }
-        }
-
-
-        public void initialSerialPort()
-        {
-            StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;
-            Thread readThread = new Thread(Read);
-
-            // Create a new SerialPort object with default settings.
-            _serialPort = new SerialPort("COM4");
-
-            // Allow the user to set the appropriate properties.
-            _serialPort.BaudRate = 9600;
-            _serialPort.Parity = Parity.None;
-            _serialPort.StopBits = StopBits.Two;
-            _serialPort.DataBits = 8;
-            _serialPort.Encoding = Encoding.Unicode;
-            _serialPort.ReadBufferSize = 128;
-            _serialPort.Handshake = Handshake.None;
-
-            // Set the read/write timeouts
-            _serialPort.ReadTimeout = 50;
-            _serialPort.WriteTimeout = 50;
-
-            _serialPort.Open();
-            //testTextBox.Text += "open serial port successful! \r\n";
-            _continue = true;
-            readThread.Start();
-
-            while (_continue)
-            {
-                if (oneItemPrice == null && oneItemBarcode != null)
-                {
-
-                    for (int i = 0; i < data.Count; i++)
-                        if (oneItemBarcode == data[i].barcode)
-                        {
-                            oneItemPrice = data[i].daily_price;
-                            _serialPort.WriteLine("O1" + oneItemPrice);
+                            String sendPrice = "";
+                            foreach (var c in realtimePrice)
+                                if (c != '.')
+                                    sendPrice += c;
+                            while(sendPrice.Length<6)
+                                sendPrice = "0"+sendPrice;
+                            port.Write("O" + id + "P" + sendPrice);
+                            isFind = true;
                         }
-                }
-                else if (oneItemBarcode == null)
-                    _serialPort.WriteLine("I1AB");
-                else
-                    _serialPort.WriteLine("I1AQ");
-
-            }
-
-            readThread.Join();
-            _serialPort.Close();
-        }
-
-        public void Read()
-        {
-            while (_continue)
-            {
-                try
-                {
-                    string message = _serialPort.ReadLine();
-                    testTextBox.Text += message + "\r\n";
-                    if (message != null && message.Length > 7)
+                    if (isFind)
                     {
-                        if (message[0] == 'B' && message[1] == 'C')
-                        {
-                            string receivedBarcode = message.Substring(2, 6);
-                            for (int i = 0; i < data.Count; i++)
-                                if (receivedBarcode == data[i].barcode)
-                                    oneItemBarcode = receivedBarcode;
-                        }
-                        if (message[0] == 'Q' && message[1] == 'T')
-                        {
-                            string receivedQuantity = message.Substring(2, 6);
-                            if (oneItemBarcode != null)
-                                //transaction.add(oneItemBarcode, receivedQuantity);
-                                oneItemBarcode = null;
-                            oneItemPrice = null;
-                        }
-                        if (message[0] == 'T' && message[1] == 'H')
-                        {
-                            wholeDayTransaction.Add(transaction);
-                            transaction = new DataStructure.Transaction();
-                        }
+                        (realtimeString[id])[0] = realtimeBarcode;
+                        (realtimeString[id])[2] = "";
+                        (realtimeString[id])[2] = realtimePrice;
+                    }
+                    else
+                    {
+                        port.Write("O" + id + "R");
                     }
                 }
-                catch (TimeoutException) { }
+                else if (message[3] == 'Q' && message.Length == 10)
+                {
+                    (realtimeString[id])[1] = message.Substring(4, 6);
+                    if ((realtimeString[id])[0] != "" && (realtimeString[id])[2] != "")
+                        realtimeTranslantion[id].items.Add(new DataStructure.transactionItem((realtimeString[id])[0], (realtimeString[id])[1], (realtimeString[id])[2]));
+                }
+                else if (message[3] == 'C')
+                {
+                    if(realtimeTranslantion[id].items.Count>0)
+                        realtimeTranslantion[id].items.RemoveAt(realtimeTranslantion[id].items.Count-1);
+                }
+
             }
         }
 
@@ -465,7 +535,8 @@ namespace wpf3002
                 }
                 else
                 {
-                    MessageBox.Show("Cannot find an item with barcode:" + barcodeSearch.Text);
+                    progressText.Text = "Cannot find an item with barcode:" + barcodeSearch.Text;
+                    //MessageBox.Show("Cannot find an item with barcode:" + barcodeSearch.Text);
                 }
         }
 
@@ -481,13 +552,15 @@ namespace wpf3002
                             ListViewLessInfo.ScrollIntoView(ListViewLessInfo.SelectedItem);
                             ListViewItem item = ListViewLessInfo.ItemContainerGenerator.ContainerFromItem(ListViewLessInfo.SelectedItem) as ListViewItem;
                             item.Focus();
-                        };
+                        }
                 }
                 else
                 {
-                    MessageBox.Show("Cannot find an item with barcode:" + barcodeSearchTransaction.Text);
+                    progressText.Text = "Cannot find an item with barcode:" + barcodeSearchTransaction.Text;
+                    //MessageBox.Show("Cannot find an item with barcode:" + barcodeSearchTransaction.Text);
                 }
         }
+
         DataStructure.Item selectedItemForLessInfo;
         DataStructure.Item selectedItemForLessInfo2;
         private void LessInfoSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -575,6 +648,7 @@ namespace wpf3002
             }
             syscTotalPrice();
         }
+
         DataStructure.transactionItem selectedItemForTransaction;
         private void TransactionSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -629,6 +703,7 @@ namespace wpf3002
                 _allItems.Add(i);
             ListViewLessInfo.SelectedItem = selectedItemForLessInfo;
             syscTotalPrice();
+            syncfile();
         }
 
         private void saveTransaction_Click(object sender, RoutedEventArgs e)
@@ -643,6 +718,7 @@ namespace wpf3002
                 _oneTransaction.Add(transactionFromPC.items[i]);
             }
             syscTotalPrice();
+            syncfile();
         }
 
         private void syncOneTransactionView()
@@ -680,6 +756,7 @@ namespace wpf3002
         }
         string[] a = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
         string[] b = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+        string[] c = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
         private void initialPriceTagId()
         {
             for (int i = 0; i < a.Length; i++)
@@ -796,19 +873,71 @@ namespace wpf3002
             _allItems.Clear();
             foreach (var i in data)
                 _allItems.Add(i);
-            MessageBox.Show("Loading Transaction Successfully!!");
+            progressText.Text = "Loading Transaction Successfully!!";
+            //MessageBox.Show("Loading Transaction Successfully!!");
         }
 
         private async void Sync_Click(object sender, RoutedEventArgs e)
         {
-            data.Clear();
+            try
+            {
+                data.Clear();
+            }
+            catch
+            {
+            }
             _allItems.Clear();
             await initial();
-            MessageBox.Show("Sync complete!!");
+            syncfile();
+            progressText.Text = "Sync complete!!";
+            
+            //MessageBox.Show("Sync complete!!");
         }
 
         private void Export_Click(object sender, RoutedEventArgs e)
         {
+
+        }
+
+        private void syncfile()
+        {
+            String filename = "transactions.txt";
+            StreamWriter sw = new StreamWriter(filename);
+            foreach (var i in _wholeDayTransaction)
+                foreach (var j in i.items)
+                    sw.WriteLine(i.id + ":" + i.casherID + ":" + j.barcode + ": " + ":" + j.quantity + ":" + i.date);
+            sw.Close();
+
+            filename = "items.txt";
+            sw = new StreamWriter(filename);
+            foreach (var i in _allItems)
+                sw.WriteLine(i.barcode + ":" + i.name + ":" + i.daily_price + ":" + i.current_stock + ":" + i.minimum_stock + ":" + i.bundle_unit + ":" + i.category + ":" + i.manufacturer);
+            sw.Close();
+
+            filename = "member.txt";
+            sw = new StreamWriter(filename);
+            foreach (var i in _member)
+                sw.WriteLine(i.phone + ":" + i.credits*5 + ":" + i.credits + ":" + todayDateForUserUpload);
+            sw.Close();
+        }
+
+        private async void UploadFile_Click(object sender, RoutedEventArgs e)
+        {
+
+            new WebClient().UploadFile("http://cg3002.herokuapp.com/api/" + StoreNum.Text + "/members.json", "POST", @"member.txt");
+
+            String response = await Functions.RequestSender.GetPriceListAsync("http://cg3002.herokuapp.com/api/members.json");
+            if (response != null)
+            {
+                _member = (ObservableCollection<DataStructure.Member>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Member>>(response);
+                foreach (var i in _member)
+                    i.credits = 0.0;
+            }
+            else
+            {
+                //textBoxUI.Text += "response is empty";
+            }
+
             List<DataStructure.ExportItem> allExportItem = new List<DataStructure.ExportItem>();
             foreach (var i in _wholeDayTransaction)
             {
@@ -829,46 +958,75 @@ namespace wpf3002
                     }
                 }
             }
-            String filename = "data" + todayDateForFileName + ".txt";
+            String filename = "data" + ".txt";
 
-            Microsoft.Win32.SaveFileDialog savefile = new Microsoft.Win32.SaveFileDialog();
-            savefile.DefaultExt = ".text"; // Default file extension
-            savefile.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+            StreamWriter sw = new StreamWriter(filename);
+            foreach (var i in allExportItem)
+                sw.WriteLine(i.barcode + ":" + i.quantity + ":" + i.price + ":" + i.date);
+            sw.Close();
 
-            // Show save file dialog box
-            Nullable<bool> result = savefile.ShowDialog();
+            new WebClient().UploadFile("http://cg3002.herokuapp.com/api/" + StoreNum.Text + "/transaction.json", "POST", @"data.txt");
 
-            // Process save file dialog box results
-            if (result == true)
+            _wholeDayTransaction = new ObservableCollection<DataStructure.Transaction>();
+            progressText.Text = "Upload successful...";
+        }
+
+        private void LoadTransaction_Item_Click(object sender, RoutedEventArgs e)
+        {
+            ThreadPool.QueueUserWorkItem((x) =>
             {
-                StreamWriter sw = new StreamWriter(savefile.FileName);
-                foreach (var i in allExportItem)
-                    sw.WriteLine(i.barcode + ":" + i.quantity + ":" + i.price + ":" + i.date);
-                sw.Close();
-                MessageBox.Show("Export File Successful!!!");
+                Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    String filename = "transactions.txt";
+                    DataStructure.Transaction tempTransaction = new DataStructure.Transaction();
+                    String transactionID = "";
+                    foreach (String line in File.ReadAllLines(filename))
+                    {
+                        String[] tokens = line.Split(':');
+                        String _barcode = tokens[2];
+                        String _quantity = tokens[4];
+                        String _price = "";
+
+                        String[] _dates = tokens[5].Split('/');
+                        DateTime _date = new DateTime(Convert.ToInt32(_dates[2]), Convert.ToInt32(_dates[1]), Convert.ToInt32(_dates[0]));
+                        foreach (var i in data)
+                            if (i.barcode == _barcode)
+                            {
+                                _price = i.daily_price;
+                            }
+                        if (transactionID == tokens[0] || transactionID == "")
+                        {
+                            tempTransaction.add(_barcode, _quantity, _price);
+                            tempTransaction.date = tokens[5];
+                            transactionID = tokens[0];
+                        }
+                        else
+                        {
+                            tempTransaction.id = transactionID;
+                            wholeDayTransaction.Add(tempTransaction);
+                            transactionID = tokens[0];
+                            tempTransaction = new DataStructure.Transaction();
+                            tempTransaction.add(_barcode, _quantity, _price);
+                            tempTransaction.date = tokens[5];
+                        }
+                    }
+                    tempTransaction.id = transactionID;
+                    if(tempTransaction.items.Count!=0)
+                        wholeDayTransaction.Add(tempTransaction);
+                }));
+            });
+            string[] lines = System.IO.File.ReadAllLines(@"items.txt");
+            data = new ObservableCollection<DataStructure.Item>();
+            foreach (string line in lines)
+            {
+                string[] splitWords = line.Split(':');
+                data.Add(new DataStructure.Item(splitWords[1],splitWords[0],splitWords[2],splitWords[3],splitWords[4],splitWords[5],splitWords[6],splitWords[7]));
             }
 
+            _allItems.Clear();
+            foreach (var i in data)
+                _allItems.Add(i);
+            progressText.Text = "Loading Previous Info Successfully!!";
         }
-
-        private void syncfile()
-        {
-            String filename = "transactions.txt";
-            // Show save file dialog box
-            StreamWriter sw = new StreamWriter(filename);
-            foreach (var i in _wholeDayTransaction)
-                foreach (var j in i.items)
-                    sw.WriteLine(i.id + ":" + i.casherID + ":" + j.barcode + ": " + ":" + j.quantity + ":" + i.date);
-            sw.Close();
-
-            filename = "items.txt";
-            // Show save file dialog box
-            sw = new StreamWriter(filename);
-            foreach (var i in _allItems)
-                sw.WriteLine(i.barcode + ":" + i.name + ":" + i.daily_price + ":" + i.current_stock + ":" + i.minimum_stock + ":" + i.bundle_unit + ":" + i.category + ":" + i.manufacturer);
-            sw.Close();
-        }
-
-
-
     }
 }
