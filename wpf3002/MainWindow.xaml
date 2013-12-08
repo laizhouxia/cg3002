@@ -85,8 +85,7 @@
                     <Button Content="Sync" HorizontalAlignment="Left" Margin="347,18,0,0" VerticalAlignment="Top" Width="76" Click="Sync_Click"/>
                     <Button x:Name="LoadTransaction_Item" Content="Load" HorizontalAlignment="Left" Margin="448,17,0,0" VerticalAlignment="Top" Width="75" Click="LoadTransaction_Item_Click"/>
                     <Button x:Name="UploadFile" Content="UploadFile" HorizontalAlignment="Left" Margin="548,17,0,0" VerticalAlignment="Top" Width="75" Click="UploadFile_Click"/>
-                    <TextBox x:Name="StoreNum" HorizontalAlignment="Left" Height="23" Margin="736,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="28"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="656,19,0,0" TextWrapping="Wrap" Text="Store Number" VerticalAlignment="Top"/>
+
                 </Grid>
             </TabItem>
             <TabItem Header="Create Transaction">
@@ -276,6 +275,20 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Setting">
+                <Grid Background="#FFF9F9F9">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="StoreNum" HorizontalAlignment="Left" Height="23" Margin="173,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" Text="1"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="71,60,0,0" TextWrapping="Wrap" Text="Store Number" VerticalAlignment="Top"/>
+                    <TextBox x:Name="HQURL" HorizontalAlignment="Left" Height="23" Margin="173,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="245" Text="cg3002.herokuapp.com"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="72,127,0,0" TextWrapping="Wrap" Text="HQ URL" VerticalAlignment="Top"/>
+                    <TextBox x:Name="PortNumber" HorizontalAlignment="Left" Height="23" Margin="173,187,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" Text="6"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="71,190,0,0" TextWrapping="Wrap" Text="Port Number" VerticalAlignment="Top"/>
+                    <Button x:Name="SaveSetting" Content="Save" HorizontalAlignment="Left" Margin="72,268,0,0" VerticalAlignment="Top" Width="75" Click="SaveSetting_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

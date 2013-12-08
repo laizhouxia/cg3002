@@ -50,13 +50,7 @@ namespace wpf3002
             for (int j = 1; j < 11; j++)
             {
                 progressText.Text = "Downloading page "+j;
-                response = await Functions.RequestSender.GetPriceListAsync("http://cg3002.herokuapp.com/api/" + storeID + "/price_list_paged.json?page=" + j);
-                //testTextBox.Text += response;a          
-                //testTextBox.Text += System.Guid.NewGuid().ToString() + "\r\n";
-                //testTextBox.Text += System.Guid.NewGuid().ToString("N") + "\r\n";
-                //testTextBox.Text += System.Guid.NewGuid().ToString("D") + "\r\n";
-                //testTextBox.Text += System.Guid.NewGuid().ToString("B") + "\r\n";
-                //testTextBox.Text += System.Guid.NewGuid().ToString("P") + "\r\n";
+                response = await Functions.RequestSender.GetPriceListAsync("http://"+HQURL.Text+"/api/" + storeID + "/price_list_paged.json?page=" + j);
                  
                 if (response != null)
                 {
@@ -79,7 +73,7 @@ namespace wpf3002
                 }
             }
 
-            response = await Functions.RequestSender.GetPriceListAsync("http://cg3002.herokuapp.com/api/members.json");
+            response = await Functions.RequestSender.GetPriceListAsync("http://" + HQURL.Text + "/api/members.json");
             if (response != null)
             {
                 _member = (ObservableCollection<DataStructure.Member>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Member>>(response);
@@ -358,6 +352,8 @@ namespace wpf3002
             {
                 port.Open();
                 port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
+                Thread oThread = new Thread(new ThreadStart(portSend));
+                oThread.Start();
                 progressText.Text = "Connect port successful..";
             }
             catch
@@ -365,8 +361,6 @@ namespace wpf3002
                 Dispatcher.Invoke((Action)delegate() { progressText.Text = "Unable to connect port.."; });
                 Dispatcher.Invoke((Action)delegate() { SyncDevices.IsEnabled = false; });
             }
-            Thread oThread = new Thread(new ThreadStart(portSend));
-            oThread.Start();
         }
 
         private void priceListSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -924,9 +918,9 @@ namespace wpf3002
         private async void UploadFile_Click(object sender, RoutedEventArgs e)
         {
 
-            new WebClient().UploadFile("http://cg3002.herokuapp.com/api/" + StoreNum.Text + "/members.json", "POST", @"member.txt");
+            new WebClient().UploadFile("http://" + HQURL.Text + "/api/" + StoreNum.Text + "/members.json", "POST", @"member.txt");
 
-            String response = await Functions.RequestSender.GetPriceListAsync("http://cg3002.herokuapp.com/api/members.json");
+            String response = await Functions.RequestSender.GetPriceListAsync("http://" + HQURL.Text + "/api/members.json");
             if (response != null)
             {
                 _member = (ObservableCollection<DataStructure.Member>)JsonConvert.DeserializeObject<ObservableCollection<DataStructure.Member>>(response);
@@ -965,7 +959,7 @@ namespace wpf3002
                 sw.WriteLine(i.barcode + ":" + i.quantity + ":" + i.price + ":" + i.date);
             sw.Close();
 
-            new WebClient().UploadFile("http://cg3002.herokuapp.com/api/" + StoreNum.Text + "/transaction.json", "POST", @"data.txt");
+            new WebClient().UploadFile("http://"+HQURL.Text+"/api/" + StoreNum.Text + "/transaction.json", "POST", @"data.txt");
 
             _wholeDayTransaction = new ObservableCollection<DataStructure.Transaction>();
             progressText.Text = "Upload successful...";
@@ -1027,6 +1021,11 @@ namespace wpf3002
             foreach (var i in data)
                 _allItems.Add(i);
             progressText.Text = "Loading Previous Info Successfully!!";
+        }
+
+        private void SaveSetting_Click(object sender, RoutedEventArgs e)
+        {
+            portInit();
         }
     }
 }
