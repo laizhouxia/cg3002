@@ -284,11 +284,15 @@
                     </Grid.ColumnDefinitions>
                     <TextBox x:Name="StoreNum" HorizontalAlignment="Left" Height="23" Margin="173,58,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" Text="1"/>
                     <TextBlock HorizontalAlignment="Left" Margin="71,60,0,0" TextWrapping="Wrap" Text="Store Number" VerticalAlignment="Top"/>
-                    <TextBox x:Name="HQURL" HorizontalAlignment="Left" Height="23" Margin="173,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="245" Text="cg3002.herokuapp.com"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="72,127,0,0" TextWrapping="Wrap" Text="HQ URL" VerticalAlignment="Top"/>
-                    <TextBox x:Name="PortNumber" HorizontalAlignment="Left" Height="23" Margin="173,187,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" Text="6"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="71,190,0,0" TextWrapping="Wrap" Text="Port Number" VerticalAlignment="Top"/>
-                    <Button x:Name="SaveSetting" Content="Save" HorizontalAlignment="Left" Margin="72,268,0,0" VerticalAlignment="Top" Width="75" Click="SaveSetting_Click"/>
+                    <TextBox x:Name="HQURL" HorizontalAlignment="Left" Height="23" Margin="173,203,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="245" Text="cg3002.herokuapp.com"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="72,206,0,0" TextWrapping="Wrap" Text="HQ URL" VerticalAlignment="Top"/>
+                    <TextBox x:Name="PortNumber" HorizontalAlignment="Left" Height="23" Margin="173,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="69" Text="6"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="71,248,0,0" TextWrapping="Wrap" Text="Port Number" VerticalAlignment="Top"/>
+                    <Button x:Name="SaveSetting" Content="Save" HorizontalAlignment="Left" Margin="71,285,0,0" VerticalAlignment="Top" Width="75" Click="SaveSetting_Click" Height="33"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="71,103,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top"/>
+                    <PasswordBox HorizontalAlignment="Left" Margin="173,103,0,0" VerticalAlignment="Top" Width="245"/>
+                    <Button Content="Authenticate" HorizontalAlignment="Left" Margin="71,140,0,0" VerticalAlignment="Top" Width="75" Height="31"/>
+                    <Label Content="Please authenticate with HQ server" HorizontalAlignment="Left" Margin="173,140,0,0" VerticalAlignment="Top" Height="31" Width="245"/>
                 </Grid>
             </TabItem>
         </TabControl>
